@@ -1,7 +1,6 @@
 const addToCart = async (req, res) => {
     try {
         const { userId, productId, quantity } = req.body;
-        
         res.status(200).json({ 
             message: 'Item added to cart',
             cart: { userId, productId, quantity }
@@ -14,7 +13,6 @@ const addToCart = async (req, res) => {
 const getCart = async (req, res) => {
     try {
         const { userId } = req.params;
-        
         res.status(200).json({ 
             cart: {
                 userId,

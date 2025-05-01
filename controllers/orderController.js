@@ -1,7 +1,6 @@
 const createOrder = async (req, res) => {
     try {
         const { userId, items, totalAmount } = req.body;
-        
         res.status(201).json({ 
             message: 'Order created successfully',
             order: { 
