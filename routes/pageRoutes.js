@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-// Simple page routes that return basic HTML
+//page routes
 router.get('/dashboard', (req, res) => {
     res.send('<h1>Admin Dashboard</h1><p>Welcome to the admin dashboard</p>');
 });
