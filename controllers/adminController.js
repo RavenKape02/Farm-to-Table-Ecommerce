@@ -3,6 +3,7 @@ const User = require('../models/user');
 
 const getDashboardStats = async (req, res) => {
     try {
+        // test data lang para malaman if nagana controllers
         res.status(200).json({ 
             stats: {
                 totalUsers: 10,
