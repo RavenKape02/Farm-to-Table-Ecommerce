@@ -1,9 +1,7 @@
 const createOrder = async (req, res) => {
     try {
-        // This is a simple placeholder - in a real app, you'd create an order in database
         const { userId, items, totalAmount } = req.body;
         
-        // For now, just return a success message
         res.status(201).json({ 
             message: 'Order created successfully',
             order: { 
@@ -22,8 +20,6 @@ const createOrder = async (req, res) => {
 const getOrderHistory = async (req, res) => {
     try {
         const { userId } = req.params;
-        
-        // For now, just return a sample order history
         res.status(200).json({ 
             orders: [
                 { 

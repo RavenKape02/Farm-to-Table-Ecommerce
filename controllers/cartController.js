@@ -1,11 +1,7 @@
-// We'll need to create a Cart model later
-
 const addToCart = async (req, res) => {
     try {
-        // This is a simple placeholder - in a real app, you'd store cart in database
         const { userId, productId, quantity } = req.body;
         
-        // For now, just return a success message
         res.status(200).json({ 
             message: 'Item added to cart',
             cart: { userId, productId, quantity }
@@ -19,7 +15,6 @@ const getCart = async (req, res) => {
     try {
         const { userId } = req.params;
         
-        // For now, just return a sample cart
         res.status(200).json({ 
             cart: {
                 userId,

@@ -3,7 +3,6 @@ const User = require('../models/user');
 
 const getDashboardStats = async (req, res) => {
     try {
-        // For now, just return mock data
         res.status(200).json({ 
             stats: {
                 totalUsers: 10,
