@@ -65,7 +65,7 @@ const LoginPage = () => {
     <div className="login-container">
       <div className="login-form-container">
         <div className="auth-logo">
-          <h3>Market Express</h3>
+          <h3>Farm-to-Table</h3>
           <p>Department of Agriculture E-commerce Platform</p>
         </div>
         

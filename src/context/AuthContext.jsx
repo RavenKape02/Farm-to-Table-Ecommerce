@@ -1,14 +1,12 @@
 import { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Create context
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check for saved user info on component mount
   useEffect(() => {
     const savedUserInfo = localStorage.getItem('userInfo');
     console.log('Initial auth check - Saved user info:', savedUserInfo ? 'Found' : 'Not found');
@@ -19,7 +17,6 @@ export const AuthProvider = ({ children }) => {
         console.log('Setting user info from localStorage:', parsedUserInfo.email);
         setUserInfo(parsedUserInfo);
         
-        // Set default axios auth header
         axios.defaults.headers.common['Authorization'] = `Bearer ${parsedUserInfo.token}`;
       } catch (error) {
         console.error('Error parsing saved user info:', error);
@@ -29,7 +26,6 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // Login
   const login = (userData) => {
     console.log('Login function called with user data:', userData.email);
     localStorage.setItem('userInfo', JSON.stringify(userData));
@@ -37,7 +33,6 @@ export const AuthProvider = ({ children }) => {
     axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
   };
 
-  // Logout
   const logout = () => {
     console.log('Logout function called');
     localStorage.removeItem('userInfo');
