@@ -72,7 +72,7 @@ const RegisterPage = () => {
     <div className="register-container">
       <div className="register-form-container">
         <div className="auth-logo">
-          <h3>Market Express</h3>
+          <h3>Farm-to-table</h3>
           <p>Department of Agriculture E-commerce Platform</p>
         </div>
         

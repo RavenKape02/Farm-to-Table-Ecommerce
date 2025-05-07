@@ -16,7 +16,7 @@ const Header = () => {
     <header className="header">
       <div className="container">
         <Link to="/" className="logo">
-          Market Express
+          Farm-to-Table
         </Link>
         
         <nav className="nav">
