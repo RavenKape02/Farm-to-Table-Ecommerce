@@ -7,13 +7,14 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminDashboard from './pages/AdminDashboard';
 import MerchantDashboard from './pages/MerchantDashboard';
-import ShopPage from './pages/ShopPage';
-import ProductDetailsPage from './pages/ProductDetailsPage';
-import CartPage from './pages/CartPage';
+import ShopPage from './pages/Shop';
+import ProductDetailsPage from './pages/ProductDetails';
+import CartPage from './pages/Cart';
 import Spinner from './components/Spinner';
 import { useContext, useEffect } from 'react';
 import { AuthContext } from './context/AuthContext';
 import './App.css';
+import OrderHistory from './pages/OrderHistory';
 
 function App() {
   return (
@@ -57,7 +58,7 @@ function AppContent() {
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/profile" element={<div>Profile Page (Coming Soon)</div>} />
-            <Route path="/orders" element={<div>Order History (Coming Soon)</div>} />
+            <Route path="/orders" element={<OrderHistory/>} />
             <Route path="/shop" element={<ShopPage />} />
             <Route path="/product/:id" element={<ProductDetailsPage />} />
             <Route path="/cart" element={<CartPage />} />
