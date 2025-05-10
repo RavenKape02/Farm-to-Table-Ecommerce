@@ -7,6 +7,9 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminDashboard from './pages/AdminDashboard';
 import MerchantDashboard from './pages/MerchantDashboard';
+import ShopPage from './pages/ShopPage';
+import ProductDetailsPage from './pages/ProductDetailsPage';
+import CartPage from './pages/CartPage';
 import Spinner from './components/Spinner';
 import { useContext, useEffect } from 'react';
 import { AuthContext } from './context/AuthContext';
@@ -49,26 +52,27 @@ function AppContent() {
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          
+
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/profile" element={<div>Profile Page (Coming Soon)</div>} />
             <Route path="/orders" element={<div>Order History (Coming Soon)</div>} />
-            <Route path="/shop" element={<div>Shop (Coming Soon)</div>} />
-            <Route path="/cart" element={<div>Shopping Cart (Coming Soon)</div>} />
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/product/:id" element={<ProductDetailsPage />} />
+            <Route path="/cart" element={<CartPage />} />
           </Route>
-          
+
           {/* Admin Routes */}
           <Route element={<PrivateRoute adminOnly={true} />}>
             <Route path="/admin" element={<AdminDashboard />} />
           </Route>
-          
+
           {/* Merchant Routes */}
           <Route element={<PrivateRoute merchantOnly={true} />}>
             <Route path="/merchant" element={<MerchantDashboard />} />
           </Route>
-          
+
           {/* Catch All */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

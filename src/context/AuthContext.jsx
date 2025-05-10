@@ -6,18 +6,16 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     const savedUserInfo = localStorage.getItem('userInfo');
-    console.log('Initial auth check - Saved user info:', savedUserInfo ? 'Found' : 'Not found');
-    
     if (savedUserInfo) {
       try {
         const parsedUserInfo = JSON.parse(savedUserInfo);
-        console.log('Setting user info from localStorage:', parsedUserInfo.email);
         setUserInfo(parsedUserInfo);
-        
         axios.defaults.headers.common['Authorization'] = `Bearer ${parsedUserInfo.token}`;
+        fetchCartCount(parsedUserInfo._id);
       } catch (error) {
         console.error('Error parsing saved user info:', error);
         localStorage.removeItem('userInfo');
@@ -26,18 +24,29 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  const fetchCartCount = async (userId) => {
+    try {
+      const { data } = await axios.get(`/api/cart/${userId}`);
+      const count = data.items.reduce((acc, item) => acc + item.quantity, 0);
+      setCartCount(count);
+    } catch (err) {
+      console.error('Error fetching cart count:', err);
+      setCartCount(0);
+    }
+  };
+
   const login = (userData) => {
-    console.log('Login function called with user data:', userData.email);
     localStorage.setItem('userInfo', JSON.stringify(userData));
     setUserInfo(userData);
     axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
+    fetchCartCount(userData._id);
   };
 
   const logout = () => {
-    console.log('Logout function called');
     localStorage.removeItem('userInfo');
     setUserInfo(null);
     delete axios.defaults.headers.common['Authorization'];
+    setCartCount(0);
   };
 
   const contextValue = {
@@ -47,16 +56,10 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAuthenticated: !!userInfo,
     isAdmin: userInfo?.userType === 'admin',
-    isMerchant: userInfo?.userType === 'merchant'
-  };
-
-  console.log('Auth context state:', { 
-    isAuthenticated: !!userInfo,
-    isAdmin: userInfo?.userType === 'admin',
     isMerchant: userInfo?.userType === 'merchant',
-    userType: userInfo?.userType,
-    loading 
-  });
+    cartCount,
+    setCartCount,
+  };
 
   return (
     <AuthContext.Provider value={contextValue}>
@@ -65,4 +68,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-export default AuthProvider; 
+export default AuthProvider;

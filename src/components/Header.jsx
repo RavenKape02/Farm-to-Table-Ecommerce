@@ -1,15 +1,20 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Header.css';
 
 const Header = () => {
-  const { userInfo, isAuthenticated, isAdmin, isMerchant, logout } = useContext(AuthContext);
+  const { userInfo, isAuthenticated, isAdmin, isMerchant, logout, cartCount } = useContext(AuthContext);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
   };
 
   return (
@@ -18,45 +23,46 @@ const Header = () => {
         <Link to="/" className="logo">
           Farm-to-Table
         </Link>
-        
-        <nav className="nav">
+
+        <button className="hamburger" onClick={toggleMenu}>
+          ☰
+        </button>
+
+        <nav className={`nav ${menuOpen ? 'open' : ''}`}>
+          <Link to="/shop" className="nav-link" onClick={() => setMenuOpen(false)}>Shop</Link>
+
+          {isAuthenticated && !isAdmin && !isMerchant && (
+            <Link to="/cart" className="nav-link cart-link" onClick={() => setMenuOpen(false)}>
+              Cart
+              {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
+            </Link>
+          )}
+
           {isAuthenticated ? (
-            <>
-              <Link to="/shop" className="nav-link">Shop</Link>
-              
-              {!isAdmin && !isMerchant && (
-                <Link to="/cart" className="nav-link">Cart</Link>
-              )}
-              
-              <div className="dropdown">
-                <button className="dropdown-btn">
-                  {userInfo?.firstName || 'Account'}
+            <div className="dropdown">
+              <button className="dropdown-btn">
+                {userInfo?.firstName || 'Account'}
+              </button>
+              <div className="dropdown-content">
+                <Link to="/profile" className="dropdown-link">Profile</Link>
+                {!isAdmin && !isMerchant && (
+                  <Link to="/orders" className="dropdown-link">Orders</Link>
+                )}
+                {isAdmin && (
+                  <Link to="/admin" className="dropdown-link">Admin Dashboard</Link>
+                )}
+                {isMerchant && (
+                  <Link to="/merchant" className="dropdown-link">Merchant Dashboard</Link>
+                )}
+                <button onClick={handleLogout} className="dropdown-link logout-btn">
+                  Logout
                 </button>
-                <div className="dropdown-content">
-                  <Link to="/profile" className="dropdown-link">Profile</Link>
-                  
-                  {!isAdmin && !isMerchant && (
-                    <Link to="/orders" className="dropdown-link">Orders</Link>
-                  )}
-                  
-                  {isAdmin && (
-                    <Link to="/admin" className="dropdown-link">Admin Dashboard</Link>
-                  )}
-                  
-                  {isMerchant && (
-                    <Link to="/merchant" className="dropdown-link">Merchant Dashboard</Link>
-                  )}
-                  
-                  <button onClick={handleLogout} className="dropdown-link logout-btn">
-                    Logout
-                  </button>
-                </div>
               </div>
-            </>
+            </div>
           ) : (
             <>
-              <Link to="/login" className="nav-link">Login</Link>
-              <Link to="/register" className="nav-link register-btn">Sign Up</Link>
+              <Link to="/login" className="nav-link" onClick={() => setMenuOpen(false)}>Login</Link>
+              <Link to="/register" className="nav-link register-btn" onClick={() => setMenuOpen(false)}>Sign Up</Link>
             </>
           )}
         </nav>
@@ -65,4 +71,4 @@ const Header = () => {
   );
 };
 
-export default Header; 
+export default Header;
