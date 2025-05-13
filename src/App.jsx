@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import MerchantDashboard from './pages/MerchantDashboard';
 import ShopPage from './pages/Shop';
 import ProductDetailsPage from './pages/ProductDetails';
+import Profile from './pages/Profile';
 import CartPage from './pages/Cart';
 import Spinner from './components/Spinner';
 import { useContext, useEffect } from 'react';
@@ -57,7 +58,7 @@ function AppContent() {
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>
             <Route path="/" element={<HomePage />} />
-            <Route path="/profile" element={<div>Profile Page (Coming Soon)</div>} />
+            <Route path="/profile" element={<Profile/>} />
             <Route path="/orders" element={<OrderHistory/>} />
             <Route path="/shop" element={<ShopPage />} />
             <Route path="/product/:id" element={<ProductDetailsPage />} />

@@ -6,29 +6,6 @@ import Trashcan from '../images/Trashcan.png';
 
 const OrderHistory = () => {
 
-    //fetch orders here
-    // const [transactions, settransactions] = useState(null)
-    // useEffect(() => {
-    //     //make func to send get req for all transactions
-    //     const getTransactions = async () => {
-    //         const response = await fetch('http://localhost:4000/api/transactions')
-    //         const json = await response.json()
-
-    //         //if worked, set transactions to post response
-    //         if (response.ok){
-    //             settransactions(json)
-    //         }
-    //     }
-    //     //run func
-    //     getTransactions()
-    // }, [])
-
-    //update transaction here
-    const cancelTransaction = (transaction) => {
-        //transaction.orderStatus = 2
-        console.log("set transaction status to 2 pls ty")
-    }
-
     //stuff i used to test
     let temporders = [
         {
@@ -60,11 +37,33 @@ const OrderHistory = () => {
         }
     ];
 
+    const[orders, setOrders] = useState(temporders);
+
+    //fetch orders here
+    // useEffect(() => {
+    //     //make func to send get req for all transactions
+    //     const getOrders = async () => {
+    //         const { data } = await axios.get('/api/transactions');
+    //       
+    //         //if worked, set orders to post response
+    //         if (response.ok){
+    //             setOrders(data)
+    //         }
+    //     }
+    //     //run func
+    //     getOrders()
+    // }, [])
+
+    //update transaction here
+    const cancelTransaction = (transaction) => {
+        //transaction.orderStatus = 2
+        console.log("set transaction status to 2 pls ty")
+    }
 
     return (
         <div>
         <ol>
-        {temporders.map((currentorders, index) => {
+        {orders.map((currentorders, index) => {
             if (currentorders.orderStatus == 0){
                 return <div className='orderhistorypending' key={index} onClick={() => cancelTransaction(currentorders[index])}>
                             <span className='historyinfo'>
