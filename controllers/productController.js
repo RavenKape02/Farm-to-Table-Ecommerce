@@ -32,6 +32,23 @@ const getProductById = async (req, res) => {
     }
 };
 
+//cheeck for any dupe products
+const getProductByName = async (req, res) => {
+    try {
+        const {productName} = req.body
+        const product = await Product.find({productName: productName});
+        
+        //check if product found
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        
+        res.status(200).json({ product });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
 //use for merchant/admin adding new product
 const createProduct = async (req, res) => {
     const {productId, productName, productDescription, productType, productQuantity, productPrice} = req.body;
@@ -81,4 +98,4 @@ const deleteProduct = async (req, res) => {
     res.status(200).json(deletedProduct);
 }
 
-module.exports = { getAllProducts, getProductById, createProduct, updateProduct, deleteProduct }; 
+module.exports = { getAllProducts, getProductById, getproductByName, createProduct, updateProduct, deleteProduct }; 

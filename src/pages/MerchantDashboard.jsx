@@ -2,8 +2,10 @@ import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
 import './MerchantDashboard.css';
+import AddProductModal from '../components/AddProduct';
 
 const MerchantDashboard = () => {
+  const [showAddProduct, setShowAddProduct] = useState(false);
   const { userInfo } = useContext(AuthContext);
   const [stats, setStats] = useState({
     totalProducts: 0,
@@ -73,7 +75,11 @@ const MerchantDashboard = () => {
           <div className="dashboard-section">
             <div className="section-header">
               <h2>Your Products</h2>
-              <button className="add-product-btn">Add New Product</button>
+              <button className="add-product-btn" onClick={() => setShowAddProduct(true)}>Add New Product</button>
+              {
+                showAddProduct?
+                <AddProductModal close={setShowAddProduct}/>:''
+              }
             </div>
             <div className="table-container">
               <table className="data-table">
