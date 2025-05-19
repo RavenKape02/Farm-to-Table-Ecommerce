@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from 'axios';
 import './Addproduct.css';
 import '../pages/MerchantDashboard.css';
 
@@ -14,12 +15,8 @@ const AddProductModal = (props) => {
 
         const product = {productID: makeNewID, productName: name, productDesc: desc, productType: type, productQuantity: quantity, productPrice: price}
         //post the product
-        const response = await fetch('api/products', {
-            method: 'POST',
-            body: JSON.stringify(product),
-            headers: {
-                'Content-Type': 'application/json'
-            }
+        const response = await axios.post('api/products', {
+            product
         })
         const json = await response.json()
         if(!response.ok){
