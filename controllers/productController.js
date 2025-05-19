@@ -98,4 +98,4 @@ const deleteProduct = async (req, res) => {
     res.status(200).json(deletedProduct);
 }
 
-module.exports = { getAllProducts, getProductById, getproductByName, createProduct, updateProduct, deleteProduct }; 
+module.exports = { getAllProducts, getProductById, getProductByName, createProduct, updateProduct, deleteProduct }; 

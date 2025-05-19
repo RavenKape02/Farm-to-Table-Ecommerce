@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
 import './AuthPages.css';
+import farmersBg from '../assets/farmers_bg.JPEG'; 
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
@@ -26,14 +27,9 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      console.log('Attempting login with:', { email });
-      console.log('Login API URL:', axios.defaults.baseURL + '/api/users/login');
-      
       const response = await axios.post('/api/users/login', formData);
-      console.log('Login successful, response:', response.data);
-      
       login(response.data);
-      
+
       if (response.data.userType === 'admin') {
         navigate('/admin');
       } else if (response.data.userType === 'merchant') {
@@ -41,19 +37,12 @@ const LoginPage = () => {
       } else {
         navigate('/');
       }
-      
     } catch (error) {
-      console.error('Login error:', error);
-      
       if (error.response) {
-        console.error('Error data:', error.response.data);
-        console.error('Error status:', error.response.status);
         setError(error.response.data.message || 'Invalid email or password');
       } else if (error.request) {
-        console.error('No response received:', error.request);
         setError('Server not responding. Please try again later.');
       } else {
-        console.error('Error message:', error.message);
         setError('An error occurred. Please try again.');
       }
     } finally {
@@ -62,14 +51,27 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-form-container">
+    <div
+      className="login-container"
+      style={{
+        backgroundImage: `url(${farmersBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '20px',
+      }}
+    >
+      <div className="login-form-container" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)' }}>
         <div className="auth-logo">
-          <h3>Farm-to-Table</h3>
+          <h3>Farm2Table</h3>
           <p>Department of Agriculture E-commerce Platform</p>
         </div>
         
-        <h2>Welcome Back</h2>
+        <h2>WELCOME</h2>
         {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit}>
@@ -113,4 +115,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage; 
+export default LoginPage;

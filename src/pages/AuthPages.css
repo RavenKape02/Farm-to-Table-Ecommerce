@@ -1,12 +1,60 @@
 /* Auth Pages Common Styles */
-.login-container, .register-container {
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.register-button:disabled {
+  background-color: #a0bfa6;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid white;
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.form-group input:hover {
+  background-color: #f0f0f0;
+}
+
+.login-container {
+  height: 100vh;
+  width: 100vw;
+  margin: 0;
+  padding: 0;
+  background-image: url('../assets/farmers_bg.JPEG');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* This line ensures the image stays in place */
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
-  background-size: cover;
+  overflow: hidden;
+}
+
+/* Form container with translucent white bg for readability */
+.login-form-container {
+  background-color: rgba(255, 255, 255, 0.85);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 500px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .login-form-container, .register-form-container {
@@ -64,16 +112,19 @@
 .login-button, .register-button {
   width: 100%;
   padding: 14px;
-  background-color: #4a6fdc;
+  background-color: #4f9562; /* base color */
   color: white;
   border: none;
   border-radius: 8px;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
+  background-image: linear-gradient(to right, #4f9562, #7cb88a); /* default gradient */
+  background-size: 200% auto;
+  transition: background-position 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .login-button:after, .register-button:after {
@@ -90,9 +141,10 @@
 }
 
 .login-button:hover, .register-button:hover {
-  background-color: #3a5ecd;
+  background-image: linear-gradient(to right, #1a3320, #4f9562); /* hover gradient */
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(74, 111, 220, 0.2);
+  background-position: right center; /* animate gradient */
 }
 
 .login-button:active, .register-button:active {
@@ -105,10 +157,11 @@
 }
 
 .login-button:disabled, .register-button:disabled {
-  background-color: #a0adce;
+  background: #a0adce;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  background-image: none; /* override gradient on disabled */
 }
 
 .register-link, .login-link {
@@ -119,14 +172,14 @@
 }
 
 .register-link a, .login-link a {
-  color: #4a6fdc;
+  color: #61a770;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.3s;
 }
 
 .register-link a:hover, .login-link a:hover {
-  color: #3a5ecd;
+  color: #15331e;
   text-decoration: underline;
 }
 
@@ -148,7 +201,7 @@
 }
 
 .auth-logo img {
-  height: 60px;
+  height: 80px;
   margin-bottom: 10px;
 }
 
@@ -162,6 +215,29 @@
   color: #666;
   font-size: 14px;
 }
+
+body, .login-container, .login-form-container, input, button, label, h2, h3, p {
+  font-family: 'Poppins', sans-serif;
+}
+
+.background-fixed {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../assets/farmers_bg.JPEG');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1;  /* behind all content */
+}
+
+.register-container {
+  position: relative;
+  z-index: 0;
+  background: rgba(255, 255, 255, 0.85); /* translucent form background */
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 576px) {
@@ -179,4 +255,28 @@
   .register-button {
     padding: 12px;
   }
+
+  .auth-logo-img {
+    height: 70px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
+  
+  .auth-logo h3 {
+    font-weight: 700;
+    font-size: 24px;
+  }
+  
+  .auth-logo p {
+    font-size: 14px;
+    color: #555;
+  }
+  
+
 } 

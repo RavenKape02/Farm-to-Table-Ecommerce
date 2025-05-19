@@ -2,6 +2,8 @@ import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
+import doaFlag from '../assets/DOA_flag.PNG';
+import riceBg from '../assets/rice_bg.JPEG'; 
 import './AuthPages.css';
 
 const RegisterPage = () => {
@@ -28,7 +30,6 @@ const RegisterPage = () => {
     e.preventDefault();
     setError('');
 
-    // Validate passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -38,29 +39,15 @@ const RegisterPage = () => {
 
     try {
       const { confirmPassword, ...registerData } = formData;
-      console.log('Attempting registration with:', { email });
-      
       const response = await axios.post('/api/users/register', registerData);
-      console.log('Registration successful:', response.data);
-      
-      // Use login function from context
       login(response.data);
-      
-      // Redirect to home page after successful registration
       navigate('/');
-      
     } catch (error) {
-      console.error('Registration error:', error);
-      
       if (error.response) {
-        console.error('Error data:', error.response.data);
-        console.error('Error status:', error.response.status);
         setError(error.response.data.message || 'Registration failed. Please try again.');
       } else if (error.request) {
-        console.error('No response received:', error.request);
         setError('Server not responding. Please try again later.');
       } else {
-        console.error('Error message:', error.message);
         setError('Registration failed. Please try again.');
       }
     } finally {
@@ -69,16 +56,30 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="register-container">
+    <div
+      className="register-bg"
+      style={{
+        backgroundImage: `url(${riceBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '20px',
+      }}
+    >
       <div className="register-form-container">
         <div className="auth-logo">
-          <h3>Farm-to-table</h3>
+          <img src={doaFlag} alt="DOA Flag" className="auth-logo-img" />
+          <h3>Farm2Table</h3>
           <p>Department of Agriculture E-commerce Platform</p>
         </div>
-        
+
         <h2>Create an Account</h2>
         {error && <div className="error-message">{error}</div>}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="firstName">First Name*</label>
@@ -92,9 +93,9 @@ const RegisterPage = () => {
               placeholder="Enter your first name"
             />
           </div>
-          
+
           <div className="form-group">
-            <label htmlFor="middleName">Middle Name (optional)</label>
+            <label htmlFor="middleName">Middle Name (Optional)</label>
             <input
               type="text"
               id="middleName"
@@ -104,7 +105,7 @@ const RegisterPage = () => {
               placeholder="Enter your middle name"
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="lastName">Last Name*</label>
             <input
@@ -117,7 +118,7 @@ const RegisterPage = () => {
               placeholder="Enter your last name"
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="email">Email Address*</label>
             <input
@@ -130,7 +131,7 @@ const RegisterPage = () => {
               placeholder="Enter your email"
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="password">Password*</label>
             <input
@@ -144,7 +145,7 @@ const RegisterPage = () => {
               minLength="6"
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="confirmPassword">Confirm Password*</label>
             <input
@@ -158,16 +159,14 @@ const RegisterPage = () => {
               minLength="6"
             />
           </div>
-          
-          <button 
-            type="submit" 
-            className="register-button" 
-            disabled={loading}
-          >
-            {loading ? 'Creating Account...' : 'Create Account'}
+
+          <button type="submit" className="register-button" disabled={loading}>
+            {loading ? <><span className="spinner" /> Creating Account...</> : 'Create Account'}
           </button>
+
         </form>
-        <div className="login-link">
+
+        <div className="login-link" style={{ marginTop: '1rem' }}>
           Already have an account? <Link to="/login">Sign in here</Link>
         </div>
       </div>
@@ -175,4 +174,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage; 
+export default RegisterPage;

@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Header.css';
+import farm2tableLogo from '../assets/farm2table.PNG';
 
 const Header = () => {
   const { userInfo, isAuthenticated, isAdmin, isMerchant, logout, cartCount } = useContext(AuthContext);
@@ -20,9 +21,12 @@ const Header = () => {
   return (
     <header className="header">
       <div className="container">
-        <Link to="/" className="logo">
-          Farm-to-Table
-        </Link>
+      <Link to="/" className="logo">
+        <img
+          src={farm2tableLogo}
+          alt="Farm-to-Table Logo"
+          style={{ height: '80px', width: 'auto' }} />
+      </Link>
 
         <button className="hamburger" onClick={toggleMenu}>
           ☰

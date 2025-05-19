@@ -16,11 +16,9 @@
   align-items: center;
 }
 
-.logo {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #4a6fdc;
-  text-decoration: none;
+.logo img {
+  max-height: 70px;
+  vertical-align: middle;
 }
 
 .nav {

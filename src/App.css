@@ -76,9 +76,6 @@ body {
   color: #666;
 }
 
-@import url('./pages/AuthPages.css');
-
-
 /* Shop Page Styles */
 .shop-page {
   padding: 20px 0;
