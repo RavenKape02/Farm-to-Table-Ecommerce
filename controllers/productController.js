@@ -51,11 +51,11 @@ const getProductByName = async (req, res) => {
 
 //use for merchant/admin adding new product
 const createProduct = async (req, res) => {
-    const {productId, productName, productDescription, productType, productQuantity, productPrice} = req.body;
+    const {productID, productName, productDescription, productType, productQuantity, productPrice} = req.body;
 
     //add to db
     try {
-        const newProduct = await Product.create({productId, productName, productDescription, productType, productQuantity, productPrice});
+        const newProduct = await Product.create({productID, productName, productDescription, productType, productQuantity, productPrice});
         res.status(200).json(newProduct);
     } catch (error){
         res.status(400).json({message: 'Server error', error});
