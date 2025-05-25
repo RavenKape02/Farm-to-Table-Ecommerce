@@ -53,7 +53,7 @@ const ProductDetailsPage = () => {
         alert("Please buy at least 1 item");
     }
     setQuantity(e);
-    setCost(product.productPrice * quantity);
+    setCost(product.productPrice * e);
   }
 
   const handleAddToCart = async (e) => {
@@ -64,6 +64,7 @@ const ProductDetailsPage = () => {
     }
     try {
       //add info to cart
+      console.log(userInfo._id);
       await axios.post('/api/cart/add', { productId: product._id, quantity: quantity, userId: userInfo._id });
   
       const { data } = await axios.get(`/api/cart/user/${userInfo._id}`);

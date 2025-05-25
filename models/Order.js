@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const transactionSchema = new mongoose.Schema({
+const orderSchema = new mongoose.Schema({
     products: [{
         productID: { type: String, required: true },
         orderQuantity: { type: Number, required: true },
@@ -11,4 +11,4 @@ const transactionSchema = new mongoose.Schema({
     time: { type: Date, required: true }
 });
 
-module.exports = mongoose.model('Transaction', transactionSchema);
+module.exports = mongoose.model('Order', orderSchema);

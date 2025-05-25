@@ -30,9 +30,9 @@ const CartPage = () => {
       console.log('products id:', refundedItems);
 
       //get product then add back refunded items
-      const item = await axios.get(`/api/products/${refundedItems.data.item.product}`);
-      await axios.patch(`/api/products/${refundedItems.data.item.product}`, {
-        productQuantity: item.data.product.productQuantity + refundedItems.data.item.quantity
+      const item = await axios.get(`/api/products/${refundedItems.data.product}`);
+      await axios.patch(`/api/products/${refundedItems.data.product}`, {
+        productQuantity: item.data.product.productQuantity + refundedItems.data.quantity
       });
 
       //remove from cart
@@ -53,22 +53,20 @@ const CartPage = () => {
 
   const createOrder = async () => {
     try {
-      const orderItems = cartItems.map(item => ({
-        productId: item.product._id,
-        quantity: item.quantity
-      }));
-
+      //make the order and add to db
       await axios.post('/api/orders/', {
-        userId: userInfo._id,
-        items: orderItems,
-        totalPrice
+        products: cartItems,
+        orderStatus: 0,
+         email: userInfo.email,
+        dateOrdered: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
       });
 
       // Clear cart after order creation
       await axios.delete(`/api/cart/clear/${userInfo._id}`);
       setCartItems([]);
       setCartCount(0);
-      navigate('/orders'); // Redirect to orders page
+      navigate('/orders'); 
     } catch (error) {
       console.error('Failed to create order', error);
     }
@@ -95,7 +93,7 @@ const CartPage = () => {
             ))}
           </ul>
           <h3>Total: ₱{totalPrice}</h3>
-          <button>Confirm order</button>
+          <button onClick={() => createOrder()}>Confirm order</button>
         </>
       )}
     </div>

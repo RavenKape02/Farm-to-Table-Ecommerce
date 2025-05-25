@@ -2,22 +2,43 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 
 const createOrder = async (req, res) => {
+    const { products, orderStatus, email, dateOrdered, time } = req.body;
+
     try {
-        const { userId, items, totalAmount } = req.body;
-        res.status(201).json({ 
-            message: 'Order created successfully',
-            order: { 
-                userId, 
-                items, 
-                totalAmount,
-                orderDate: new Date(),
-                status: 'pending'
-            }
-        });
+        const newOrder = new Order({products, orderStatus, email, dateOrdered, time});
+        res.status(200).json(newOrder);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        console.log('Error creating order:', error);
+        res.status(400).json({ message: 'could not create order', error });
     }
 };
+
+const getOrder = async (req, res) => {
+    try {
+            const { id } = req.params;
+    
+            //check if id is valid
+            if (!mongoose.Types.ObjectId.isValid(id)){
+                console.log('Invalid ObjectId');
+                return res.status(404).json({ message: 'id not found' });
+            }
+    
+            const order = await Order.findById(id);
+            console.log('Found order:', order);
+            
+            //check if product found
+            if (!order) {
+                console.log('order not found in DB');
+                return res.status(404).json({ message: 'order not found' });
+            }
+            
+            res.status(200).json({ order });
+        } catch (error) {
+            console.error('Error in getProductById:', error);
+            res.status(500).json({ message: 'Server error', error });
+        }
+
+}
 
 const getOrderHistory = async (req, res) => {
     try {
@@ -39,4 +60,24 @@ const getOrderHistory = async (req, res) => {
     }
 };
 
-module.exports = { createOrder, getOrderHistory }; 
+const updateOrderStatus = async (req, res) => {
+    const {id} = req.params;
+        console.log('Updating order with ID:', id);
+    
+        //check if req id is valid
+        if (!mongoose.Types.ObjectId.isValid(id)){
+            return res.status(404).json({ message: 'Order not found' });
+        }
+    
+        const updatedOrder = await Order.findOneAndUpdate({_id: id}, {
+            ...req.body
+        });
+    
+        if (!updatedOrder) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+        
+        res.status(200).json({ updatedProduct: updatedOrder });
+};
+
+module.exports = { createOrder, getOrder, getOrderHistory, updateOrderStatus }; 

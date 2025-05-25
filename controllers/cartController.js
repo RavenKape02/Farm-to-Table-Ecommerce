@@ -29,7 +29,7 @@ const getCart = async (req, res) => {
     try {
         const cart = await Cart.findOne({ user: req.params.userId }).populate('items.product');
         if (!cart) return res.status(404).json({ message: 'Cart not found' });
-        res.json(cart);
+        res.json({cart});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -41,7 +41,7 @@ const getProductInCart = async (req, res) => {
         if (!cart) return res.status(404).json({ message: 'Cart product not found' });
 
         const item = cart.items.find(item => item._id.toString() == req.params.itemId);
-        res.json(item);
+        res.json({item});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -54,10 +54,24 @@ const removeFromCart = async (req, res) => {
 
         cart.items = cart.items.filter(item => item._id.toString() !== req.params.itemId);
         await cart.save();
-        res.json(cart);
+        res.json({cart});
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
 
-module.exports = { addToCart, getCart, getProductInCart: getProductInCart, removeFromCart };
+const clearCart = async (req, res) => {
+    try {
+        const cart = await Cart.findOne({ user: req.params.userId });
+        if (!cart) return res.status(404).json({ message: 'Cart item not found' });
+
+        //empty array so everything is removed
+        cart.items = [];
+        await cart.save();
+        res.json({cart});
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { addToCart, getCart, getProductInCart: getProductInCart, removeFromCart, clearCart };

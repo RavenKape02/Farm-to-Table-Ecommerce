@@ -56,7 +56,6 @@ const getProductByName = async (req, res) => {
 
 //use for merchant/admin adding new product
 const createProduct = async (req, res) => {
-    console.log('product to create:', req.body);
     const {productName, productDescription, productType, productQuantity, productPrice} = req.body;
 
     //add to db
