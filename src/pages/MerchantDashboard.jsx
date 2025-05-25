@@ -18,18 +18,21 @@ const MerchantDashboard = () => {
   useEffect(() => {
     const fetchMerchantData = async () => {
       try {
+        //get all products in mongodb
+        const response = await axios.get('/api/products/');
+        const products = response.data.products.map(prod => ({
+          id: prod.productID, 
+          name: prod.productName,
+          category: prod.productType == 1 ? "Crop" : prod.productType == 2 ? "Poultry" : "Other",
+          price: Number(prod.productPrice),
+          stock: Number(prod.productQuantity)
+        }));
         //placeholder data lang to for looks
         setStats({
-          totalProducts: 15,
+          totalProducts: response.data.products.length,
           totalSales: 12500,
           pendingOrders: 4,
-          products: [
-            { id: '101', name: 'Rice (5kg)', price: 250, stock: 42, category: 'Grains' },
-            { id: '102', name: 'Tomatoes (1kg)', price: 80, stock: 35, category: 'Vegetables' },
-            { id: '103', name: 'Chicken (Whole)', price: 180, stock: 18, category: 'Meat' },
-            { id: '104', name: 'Eggs (12pcs)', price: 90, stock: 50, category: 'Poultry' },
-            { id: '105', name: 'Bananas (1kg)', price: 60, stock: 28, category: 'Fruits' },
-          ]
+          products
         });
       } catch (error) {
         console.error('Error fetching merchant data:', error);

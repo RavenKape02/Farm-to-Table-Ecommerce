@@ -6,7 +6,7 @@ import '../pages/MerchantDashboard.css';
 const AddProductModal = (props) => {
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
-    const [type, setType] = useState('Crop');
+    const [type, setType] = useState('1');
     const [quantity, setQuantity] = useState('');
     const [price, setPrice] = useState('');
     
@@ -51,8 +51,8 @@ const AddProductModal = (props) => {
                         value={type} 
                         placeholder="What is your type of product?" 
                         required>
-                            <option value="Crop">Crop</option>
-                            <option value="Poultry">Poultry</option>
+                            <option value="1">Crop</option>
+                            <option value="2">Poultry</option>
                     </select>
                     <input type="number" 
                         onChange={(e) => setQuantity(e.target.value)} 
