@@ -12,22 +12,27 @@ const getAllProducts = async (req, res) => {
 
 const getProductById = async (req, res) => {
     try {
-        const { productId } = req.params;
+        const { id } = req.params;
+        console.log('Requested ID:', id);
 
         //check if req id is valid
-        if (!mongoose.Types.ObjectId.isValid(productId)){
-            return res.status(404).json({ message: 'Product not found' });
+        if (!mongoose.Types.ObjectId.isValid(id)){
+            console.log('Invalid ObjectId');
+            return res.status(404).json({ message: 'id not found' });
         }
 
-        const product = await Product.findById(productId);
+        const product = await Product.findById(id);
+        console.log('Found product:', product);
         
         //check if product found
         if (!product) {
+            console.log('Product not found in DB');
             return res.status(404).json({ message: 'Product not found' });
         }
         
         res.status(200).json({ product });
     } catch (error) {
+        console.error('Error in getProductById:', error);
         res.status(500).json({ message: 'Server error', error });
     }
 };

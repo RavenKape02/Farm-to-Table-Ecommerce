@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 
 const userRoutes = require('./routes/userRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const productRoutes = require('./routes/productRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
 
@@ -39,6 +40,7 @@ app.get('/api/test', (req, res) => {
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/cart', cartRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/transactions', transactionRoutes);
 
