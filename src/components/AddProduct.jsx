@@ -6,26 +6,28 @@ import '../pages/MerchantDashboard.css';
 const AddProductModal = (props) => {
     const [name, setName] = useState('');
     const [desc, setDesc] = useState('');
-    const [type, setType] = useState('1');
+    const [type, setType] = useState(1);
     const [quantity, setQuantity] = useState('');
     const [price, setPrice] = useState('');
     
     const submitProduct = async (e) => {
-        e.preventDefault()
-        let makeNewID = (Date.now() + Math.random()).toString();  
+        e.preventDefault();
 
-        const product = {productID: makeNewID, productName: name, productDescription: desc, productType: type, productQuantity: quantity, productPrice: price}
+        const product = {productName: name, productDescription: desc, productType: type, productQuantity: quantity, productPrice: price}
         //post the product
         try{
-            const response = await axios.post('/api/products/',product)
+            console.log('Adding product:', product);
+            const response = await axios.post('/api/products/', product)
+            console.log('response:', response.data)
             setName('')
             setDesc('')
-            setType('')
-            setQuantity('')
-            setPrice('')
-            console.log('product added!', response.data)
+            setType(1)
+            setQuantity(1)
+            setPrice(1)
+            console.log('product added!', response.data)    
             //exit popup
-            props.close(false)
+            props.refreshProducts();
+            props.close(false);
         } catch (error){
             console.error('Error adding product:', error);
         }
@@ -47,7 +49,7 @@ const AddProductModal = (props) => {
                         placeholder="Describe your product.." 
                         style={{height: "200px"}}/>
                     <select type="text" 
-                        onChange={(e) => setType(e.target.value)} 
+                        onChange={(e) => setType(Number(e.target.value))} 
                         value={type} 
                         placeholder="What is your type of product?" 
                         required>
@@ -55,12 +57,12 @@ const AddProductModal = (props) => {
                             <option value="2">Poultry</option>
                     </select>
                     <input type="number" 
-                        onChange={(e) => setQuantity(e.target.value)} 
+                        onChange={(e) => setQuantity(Number(e.target.value))} 
                         value={quantity} 
                         placeholder="How much are you selling?" 
                         required/>
                     <input type="number" 
-                        onChange={(e) => setPrice(e.target.value)} 
+                        onChange={(e) => setPrice(Number(e.target.value))} 
                         value={price} 
                         placeholder="Enter price in pesos..." 
                         required/>

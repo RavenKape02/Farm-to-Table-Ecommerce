@@ -35,6 +35,18 @@ const getCart = async (req, res) => {
     }
 };
 
+const getProductInCart = async (req, res) => {
+    try {
+        const cart = await Cart.findOne({ 'items._id': req.params.itemId });
+        if (!cart) return res.status(404).json({ message: 'Cart product not found' });
+
+        const item = cart.items.find(item => item._id.toString() == req.params.itemId);
+        res.json(item);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 const removeFromCart = async (req, res) => {
     try {
         const cart = await Cart.findOne({ 'items._id': req.params.itemId });
@@ -48,4 +60,4 @@ const removeFromCart = async (req, res) => {
     }
 };
 
-module.exports = { addToCart, getCart, removeFromCart };
+module.exports = { addToCart, getCart, getProductInCart: getProductInCart, removeFromCart };

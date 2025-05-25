@@ -18,29 +18,31 @@ const ProductDetailsPage = () => {
       setProduct(data.product);
       //set values for buying 1 item at start
       setCost(data.product.productPrice * 1); // Default cost to price of one unit
-      setQuantity(0); 
+      setQuantity(1); 
     };
     fetchProduct();
   }, [id]);
 
   const handleCounter = (e) => {
     //check if add or subtract amount to buy
+    let newQuantity = quantity;
     if (e == '+'){
         //dont exceed available stock
         if (quantity < product.productQuantity) {
-            setQuantity(quantity + 1);
+            newQuantity = quantity + 1;
         } else {
             alert("Cannot exceed available stock");
         }
     } else if (e == '-') {
         //dont buy negative stock or be a window shopper lol
         if (quantity > 1) {
-            setQuantity(quantity - 1);
+            newQuantity = quantity - 1;
         } else {
             alert("Quantity cannot be less than 1");
         }
     }
-    setCost(product.productPrice * quantity);
+    setQuantity(newQuantity);
+    setCost(product.productPrice * newQuantity);
   }
 
   const handleInput = (e) => {
@@ -50,6 +52,7 @@ const ProductDetailsPage = () => {
     } else  if (e < 1) {
         alert("Please buy at least 1 item");
     }
+    setQuantity(e);
     setCost(product.productPrice * quantity);
   }
 
@@ -60,13 +63,19 @@ const ProductDetailsPage = () => {
       return;
     }
     try {
+      //add info to cart
       await axios.post('/api/cart/add', { productId: product._id, quantity: quantity, userId: userInfo._id });
   
-      const { data } = await axios.get(`/api/cart/${userInfo._id}`);
+      const { data } = await axios.get(`/api/cart/user/${userInfo._id}`);
       const total = data.items.reduce((acc, item) => acc + item.quantity, 0);
       setCartCount(total);
+
+      //update products after buying 
+      await axios.patch(`/api/products/${product._id}`, {
+        productQuantity: product.productQuantity - quantity
+      });
   
-      navigate('/cart');
+      navigate('/shop');
     } catch (error) {
       console.error('Failed to add to cart', error);
     }
@@ -81,16 +90,17 @@ const ProductDetailsPage = () => {
       <form className="product-form" onSubmit={handleAddToCart}>
           <span className="product-quantity">
               <button className="action-btn edit-btn" type="button" onClick={() => handleCounter('-')}>-</button>
-              <input type="number" 
-                  onChange={(e) => handleInput(Number(e.target.value))} 
-                  value={quantity}
-                  required/>
+              <input className='counter-input'
+                type="number" 
+                onChange={(e) => handleInput(Number(e.target.value))} 
+                value={quantity}
+                required/>
               <button className="action-btn edit-btn" type="button" onClick={() => handleCounter('+')}>+</button>
           </span>
           <p>Total Cost: ₱{cost}</p>
           <span className="button-loc">
               <button type="submit" className="action-btn edit-btn" >Submit</button>
-              <button className="action-btn delete-btn" onClick={() => navigate('/cart')}>Cancel</button>
+              <button className="action-btn delete-btn" onClick={() => navigate('/shop')}>Cancel</button>
           </span>
       </form>
     </div>

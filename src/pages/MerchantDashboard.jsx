@@ -15,32 +15,32 @@ const MerchantDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchMerchantData = async () => {
-      try {
-        //get all products in mongodb
-        const response = await axios.get('/api/products/');
-        const products = response.data.products.map(prod => ({
-          id: prod.productID, 
-          name: prod.productName,
-          category: prod.productType == 1 ? "Crop" : prod.productType == 2 ? "Poultry" : "Other",
-          price: Number(prod.productPrice),
-          stock: Number(prod.productQuantity)
-        }));
-        //placeholder data lang to for looks
-        setStats({
-          totalProducts: response.data.products.length,
-          totalSales: 12500,
-          pendingOrders: 4,
-          products
-        });
-      } catch (error) {
-        console.error('Error fetching merchant data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchMerchantData = async () => {
+    try {
+      //get all products in mongodb
+      const response = await axios.get('/api/products/');
+      const products = response.data.products.map(prod => ({
+        id: prod._id, 
+        name: prod.productName,
+        category: prod.productType == 1 ? "Crop" : prod.productType == 2 ? "Poultry" : "Other",
+        price: Number(prod.productPrice),
+        stock: Number(prod.productQuantity)
+      }));
+      //placeholder data lang to for looks
+      setStats({
+        totalProducts: response.data.products.length,
+        totalSales: 12500,
+        pendingOrders: 4,
+        products
+      });
+    } catch (error) {
+      console.error('Error fetching merchant data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchMerchantData();
   }, []);
 
@@ -81,7 +81,7 @@ const MerchantDashboard = () => {
               <button className="add-product-btn" onClick={() => setShowAddProduct(true)}>Add New Product</button>
               {
                 showAddProduct?
-                <AddProductModal close={setShowAddProduct}/>:''
+                <AddProductModal close={setShowAddProduct} refreshProducts={fetchMerchantData}/>:''
               }
             </div>
             <div className="table-container">

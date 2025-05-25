@@ -10,7 +10,7 @@ h1, p {
     align-items: center;
 }
 
-input {
+.counter-input {
     margin: 20px;
     width: 10%;
     text-align: center;

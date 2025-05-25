@@ -56,20 +56,23 @@ const getProductByName = async (req, res) => {
 
 //use for merchant/admin adding new product
 const createProduct = async (req, res) => {
-    const {productID, productName, productDescription, productType, productQuantity, productPrice} = req.body;
+    console.log('product to create:', req.body);
+    const {productName, productDescription, productType, productQuantity, productPrice} = req.body;
 
     //add to db
     try {
-        const newProduct = await Product.create({productID, productName, productDescription, productType, productQuantity, productPrice});
+        const newProduct = await Product.create({productName, productDescription, productType, productQuantity, productPrice});
         res.status(200).json(newProduct);
     } catch (error){
-        res.status(400).json({message: 'Server error', error});
+        console.error('Product creation error:', error);
+        res.status(400).json({message: error});
     }
 }
 
 //use when customer buys product/nagcancell order
 const updateProduct = async (req, res) => {
     const {id} = req.params;
+    console.log('Updating product with ID:', id);
 
     //check if req id is valid
     if (!mongoose.Types.ObjectId.isValid(id)){
