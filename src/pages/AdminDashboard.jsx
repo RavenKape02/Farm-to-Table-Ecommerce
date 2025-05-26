@@ -327,23 +327,36 @@ const AdminDashboard = () => {
                     <td>{order.transactionId}</td>
                     <td>{order.email}</td>
                     <td>{order.time}</td>
-                    <td>
-                    {order.products.map(item => (
-                      <div key={item._id}>
-                        {item.productId?.productName || 'Unknown Product'} x {item.orderQuantity}
-                      </div>
-                    ))}
 
-                    <td>₱{order.products.reduce((sum, item) => 
-                      sum + ((item.productId?.productPrice || 0) * item.orderQuantity), 0).toFixed(2)}</td>
+                    {/* Products */}
+                    <td>
+                      {order.products.map(item => (
+                        <div key={item._id}>
+                          {item.productId?.productName || 'Unknown Product'} x {item.orderQuantity}
+                        </div>
+                      ))}
+                    </td>
+
+                    {/* Total Price */}
+                    <td>
+                      ₱{order.products.reduce(
+                        (sum, item) => sum + ((item.productId?.productPrice || 0) * item.orderQuantity),
+                        0
+                      ).toFixed(2)}
+                    </td>
+
+                    {/* Order Status */}
+                    <td>
                       <span className={`status-badge ${
                         order.orderStatus === 0 ? 'pending' :
                         order.orderStatus === 1 ? 'completed' : 'cancelled'
                       }`}>
                         {order.orderStatus === 0 ? 'Pending' :
-                         order.orderStatus === 1 ? 'Completed' : 'Cancelled'}
+                        order.orderStatus === 1 ? 'Completed' : 'Cancelled'}
                       </span>
                     </td>
+
+                    {/* Action Button */}
                     <td>
                       {order.orderStatus === 0 && (
                         <button 
