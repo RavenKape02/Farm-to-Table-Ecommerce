@@ -1,11 +1,14 @@
 import { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Profile.css';
-import customer from '../images/customer.png';
-import merchant from '../images/merchant.png';
-import admin from '../images/admin.png';
 
 const Profile = () => {
+    const { userInfo } = useContext(AuthContext);
+    const [pending, setPending] = useState(0);
+    const [confirmed, setConfirmed] = useState(0);
+    const [cancelled, setCancelled] = useState(0);
+    const [total, setTotal] = useState(0);
 
     //stuff i use to test
     let tempuser = {
@@ -16,60 +19,47 @@ const Profile = () => {
         email: 'test@gmail.com'
     }
 
-    const {logout} = useContext(AuthContext);
-    const [user, setUser] = useState(tempuser);
-
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
-
-    //fetch orders here
-    // useEffect(() => {
-    //     //make func to send get req for all transactions
-    //     const getUser = async () => {
-    //         const { data } = await axios.get('/api/User');
-    //       
-    //         //if worked, set transactions to post response
-    //         if (response.ok){
-    //             setUser(data)
-    //         }
-    //     }
-    //     //run func
-    //     getUser()
-    // }, [])
-
-    let img;
-    if (user.userType == "customer"){
-        img = customer
-    } else if (user.userType == "merchant"){
-        img = merchant
-    } else if (user.userType == "admin"){
-        img = admin
-    }
-
     return(
-        <div className="profileBackground">
-            <div className='profileInfo'>
-                <div className='profileLeft'>
-                    <img src={img} width={"100%"} height={"width"}/>
-                    <h1 className='profileText' style={{textAlign: "Center"}}>Welcome,</h1>
-                    <h1 className='profileText' style={{textAlign: "Center"}}>{user.userType}!</h1>
-                </div>
-                <div className='profileRight'>
-                    <div>
-                        <h1 className='profileText'>{user.lastName}, {user.firstName} {user.middleName}</h1>
-                        <h2 className='profileText'>Email: {user.email}</h2>
-                        <h2 className='profileText'>more info here:</h2>
+        <div className="order-history-container">
+                    <h2>Your Profile</h2>
+                    
+                    <div className="orders-list">
+                            <div className=''>
+                                <div className="order-header">
+                                    <h3>Hello, {userInfo.firstName}!</h3>
+                                </div>
+                                
+                                <div className="order-items">
+                                    <div className="order-item">
+                                        <p>Pending orders: </p>
+                                        <p>{pending}</p>
+                                    </div>
+                                    <div className="order-item">
+                                        <p>Confirmed orders: </p>
+                                        <p>{confirmed}</p>
+                                    </div>
+                                    <div className="order-item">
+                                        <p>Cancelled orders: </p>
+                                        <p>{cancelled}</p>
+                                    </div>
+                                    <div className="order-total">
+                                        <p>Total Orders:</p>
+                                        <p>{pending + confirmed + cancelled}</p>
+                                    </div>
+                                </div>
+    
+                                <div className="order-footer">
+                                    <button 
+                                        className="cancel-btn"
+                                    >
+                                        Edit Profile
+                                    </button>
+                                    
+                                    <Link to={`/shop`} className="cancel-btn">See Orders</Link>
+                                </div>
+                            </div>
                     </div>
-                    <div>
-                        <div className='logoutButton'>
-                            <h3 className='profileText' onClick={handleLogout} style={{textAlign: "Center"}}>Logout</h3>
-                        </div>
-                    </div>
                 </div>
-            </div>
-        </div>
 
     );
 }

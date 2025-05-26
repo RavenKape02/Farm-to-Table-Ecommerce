@@ -59,6 +59,9 @@ const Header = () => {
                 {isMerchant && (
                   <Link to="/merchant" className="dropdown-link">Merchant Dashboard</Link>
                 )}
+                {!isMerchant && !isAdmin && (
+                  <Link to="/profile" className="dropdown-link">Profile</Link>
+                )}
                 <button onClick={handleLogout} className="dropdown-link logout-btn">
                   Logout
                 </button>
