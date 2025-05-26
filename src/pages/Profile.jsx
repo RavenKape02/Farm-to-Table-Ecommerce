@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import './Profile.css';
 
@@ -8,7 +9,21 @@ const Profile = () => {
     const [pending, setPending] = useState(0);
     const [confirmed, setConfirmed] = useState(0);
     const [cancelled, setCancelled] = useState(0);
-    const [total, setTotal] = useState(0);
+    const [isEditing, setIsEditing] = useState(false);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            const response = await axios.get('/api/orders');
+            console.log(response.data);
+            const orders = response.data.orders || [];
+            setPending(orders.filter(order => order.orderStatus === 0 && order.email == userInfo.email).length);
+            setConfirmed(orders.filter(order => order.orderStatus === 1 && order.email == userInfo.email).length);
+            setCancelled(orders.filter(order => order.orderStatus === 2 && order.email == userInfo.email).length);
+        };
+        fetchOrders();
+
+
+    }, []);
 
     //stuff i use to test
     let tempuser = {
@@ -26,7 +41,7 @@ const Profile = () => {
                     <div className="orders-list">
                             <div className=''>
                                 <div className="order-header">
-                                    <h3>Hello, {userInfo.firstName}!</h3>
+                                    <h3>Hello, {userInfo.firstName} {userInfo.middleName} {userInfo.lastName}!</h3>
                                 </div>
                                 
                                 <div className="order-items">
@@ -51,6 +66,7 @@ const Profile = () => {
                                 <div className="order-footer">
                                     <button 
                                         className="cancel-btn"
+                                        onClick={() => setIsEditing(!isEditing)}
                                     >
                                         Edit Profile
                                     </button>
