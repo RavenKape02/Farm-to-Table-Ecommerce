@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import './Header.css';
 import farm2tableLogo from '../assets/farm2table.PNG';
@@ -8,6 +8,7 @@ const Header = () => {
   const { userInfo, isAuthenticated, isAdmin, isMerchant, logout, cartCount } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
@@ -21,19 +22,21 @@ const Header = () => {
   return (
     <header className="header">
       <div className="container">
-      <Link to="/" className="logo">
-        <img
-          src={farm2tableLogo}
-          alt="Farm-to-Table Logo"
-          style={{ height: '80px', width: 'auto' }} />
-      </Link>
+        <Link to={isAdmin ? "/admin" : "/"} className="logo">
+          <img
+            src={farm2tableLogo}
+            alt="Farm-to-Table Logo"
+            style={{ height: '80px', width: 'auto' }} />
+        </Link>
 
         <button className="hamburger" onClick={toggleMenu}>
           ☰
         </button>
 
         <nav className={`nav ${menuOpen ? 'open' : ''}`}>
-          <Link to="/shop" className="nav-link" onClick={() => setMenuOpen(false)}>Shop</Link>
+          {location.pathname !== '/login' && location.pathname !== '/register' && !isAdmin && (
+            <Link to="/shop" className="nav-link" onClick={() => setMenuOpen(false)}>Shop</Link>
+          )}
 
           {isAuthenticated && !isAdmin && !isMerchant && (
             <Link to="/cart" className="nav-link cart-link" onClick={() => setMenuOpen(false)}>
@@ -48,12 +51,8 @@ const Header = () => {
                 {userInfo?.firstName || 'Account'}
               </button>
               <div className="dropdown-content">
-                <Link to="/profile" className="dropdown-link">Profile</Link>
                 {!isAdmin && !isMerchant && (
                   <Link to="/orders" className="dropdown-link">Orders</Link>
-                )}
-                {isAdmin && (
-                  <Link to="/admin" className="dropdown-link">Admin Dashboard</Link>
                 )}
                 {isMerchant && (
                   <Link to="/merchant" className="dropdown-link">Merchant Dashboard</Link>

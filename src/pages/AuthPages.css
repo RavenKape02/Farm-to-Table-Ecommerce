@@ -44,6 +44,10 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  box-sizing: border-box;
+  position: fixed; /* Prevent scrolling */
+  top: 0;
+  left: 0;
 }
 
 /* Form container with translucent white bg for readability */
@@ -55,6 +59,7 @@
   width: 100%;
   max-width: 500px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
 }
 
 .login-form-container, .register-form-container {
@@ -65,6 +70,7 @@
   width: 100%;
   max-width: 500px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
 }
 
 .login-form-container:hover, .register-form-container:hover {

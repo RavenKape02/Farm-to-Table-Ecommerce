@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminDashboard from './pages/AdminDashboard';
-import MerchantDashboard from './pages/MerchantDashboard';
+import ManageUsers from './pages/ManageUsers';
 import ShopPage from './pages/Shop';
 import ProductDetailsPage from './pages/ProductDetails';
 import Profile from './pages/Profile';
@@ -52,13 +52,16 @@ function AppContent() {
       <main className="main-content">
         <Routes>
           {/* Public Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route element={<PrivateRoute />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+          </Route>
 
           {/* Protected Routes */}
           <Route element={<PrivateRoute />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/profile" element={<Profile/>} />
+            <Route path="/" element={
+              isAdmin ? <AdminDashboard /> : <HomePage />
+            } />
             <Route path="/orders" element={<OrderHistory/>} />
             <Route path="/shop" element={<ShopPage />} />
             <Route path="/product/:id" element={<ProductDetailsPage />} />
@@ -68,11 +71,7 @@ function AppContent() {
           {/* Admin Routes */}
           <Route element={<PrivateRoute adminOnly={true} />}>
             <Route path="/admin" element={<AdminDashboard />} />
-          </Route>
-
-          {/* Merchant Routes */}
-          <Route element={<PrivateRoute merchantOnly={true} />}>
-            <Route path="/merchant" element={<MerchantDashboard />} />
+            <Route path="/admin/users" element={<ManageUsers />} />
           </Route>
 
           {/* Catch All */}

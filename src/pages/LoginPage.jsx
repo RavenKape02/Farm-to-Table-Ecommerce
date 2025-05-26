@@ -62,7 +62,6 @@ const LoginPage = () => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        padding: '20px',
       }}
     >
       <div className="login-form-container" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)' }}>

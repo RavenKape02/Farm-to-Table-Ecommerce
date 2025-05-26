@@ -31,25 +31,13 @@ const adminUser = {
     userType: 'admin'
 };
 
-const merchantUser = {
-    firstName: 'Department',
-    middleName: 'of',
-    lastName: 'Agriculture',
-    email: 'merchant@example.com',
-    password: 'merchant123',
-    userType: 'merchant'
-};
-
 const importUsers = async () => {
     try {
         await User.deleteOne({ email: adminUser.email });
-        await User.deleteOne({ email: merchantUser.email });
         
         const createdAdmin = await User.create(adminUser);
-        const createdMerchant = await User.create(merchantUser);
         
         console.log('Admin user created successfully:', createdAdmin.email);
-        console.log('Merchant user created successfully:', createdMerchant.email);
         
         process.exit(0);
     } catch (error) {

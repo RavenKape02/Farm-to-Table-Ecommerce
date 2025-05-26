@@ -8,6 +8,8 @@ const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const salesRoutes = require('./routes/salesRoutes');
+const transactionRoutes = require('./routes/transactionRoutes');
 
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
@@ -20,7 +22,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // Vite's default port is 5173
+  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], 
   credentials: true
 }));
 app.use(express.json());
@@ -29,8 +31,8 @@ const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/market-db';
 console.log('Connecting to MongoDB with URI:', mongoUri);
 
 mongoose.connect(mongoUri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 30000, 
+    socketTimeoutMS: 45000, 
 })
 .then(() => console.log('MongoDB connected'))
 .catch((err) => console.error('MongoDB connection error:', err));
@@ -43,6 +45,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/sales', salesRoutes);
+app.use('/api/transactions', transactionRoutes);
 
 app.get('/', (req, res) => {
     res.send('API is running...');
