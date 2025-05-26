@@ -163,7 +163,7 @@ const AdminDashboard = () => {
     <div className="admin-dashboard">
       <div className="dashboard-header">
         <h1>Admin Dashboard</h1>
-        <p>Welcome back, {userInfo?.email}</p>
+        <p>Welcome back, Administrator</p>
       </div>
 
       <div className="stats-cards">
@@ -213,7 +213,15 @@ const AdminDashboard = () => {
 
       {showAddProduct && (
         <div className="dashboard-section">
-          <h2>Add New Product</h2>
+          <div className="section-header">
+            <h2>Add New Product</h2>
+            <button 
+              className="close-btn"
+              onClick={() => setShowAddProduct(false)}
+            >
+              ✕
+            </button>
+          </div>
           <form onSubmit={handleAddProduct} className="add-product-form">
             <input
               type="text"

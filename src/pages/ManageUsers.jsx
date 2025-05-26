@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AdminDashboard.css';
 
@@ -8,6 +9,7 @@ const ManageUsers = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { userInfo } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -36,6 +38,12 @@ const ManageUsers = () => {
   return (
     <div className="admin-dashboard">
       <div className="dashboard-header">
+        <button 
+          className="back-btn"
+          onClick={() => navigate('/admin')}
+        >
+          ← Back to Dashboard
+        </button>
         <h1>Manage Users</h1>
         <p>Total Registered Users: {users.length}</p>
       </div>
