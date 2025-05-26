@@ -54,10 +54,16 @@ const OrderHistory = () => {
     };
 
     const calculateOrderTotal = (products) => {
-        return products.reduce((total, item) => {
-            return total + (item.productId.productPrice * item.orderQuantity);
+        return (products || []).reduce((total, item) => {
+          const price = Number(item?.productId?.productPrice) || 0;
+          const quantity = Number(item?.orderQuantity) || 0;
+      
+          console.log('price:', price, 'quantity:', quantity, 'subtotal:', price * quantity);
+      
+          return total + price * quantity;
         }, 0);
-    };
+      };
+        
 
     return (
         <div className="order-history-container">
@@ -92,13 +98,14 @@ const OrderHistory = () => {
                             </div>
                             
                             <div className="order-items">
-                                {order.products.map((item, index) => (
-                                    <div key={index} className="order-item">
-                                        <p>{item.productId.productName} x {item.orderQuantity}</p>
-                                        <p>₱{item.productId.productPrice * item.orderQuantity}</p>
-                                    </div>
+                            {(order.items || []).map((item, index) => (
+                                <div key={index}>
+                                    <p>
+                                    Product: {item.productId ? item.productId.productName : 'Deleted Product'}
+                                    </p>
+                                </div>
                                 ))}
-                                <div className="order-total">
+                            <div className="order-total">
                                     <p>Total Amount:</p>
                                     <p>₱{calculateOrderTotal(order.products)}</p>
                                 </div>

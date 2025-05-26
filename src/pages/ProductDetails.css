@@ -1,24 +1,128 @@
-.product-quantity {
+/* Product Details Box with Background Image + Glassmorphism */
+.product-details {
+    font-family: 'Poppins', sans-serif;
+    background: url('../assets/edited_bg-2.png') center/cover no-repeat !important;
+    opacity: 0.9;
+    border-radius: 20px;
+    padding: 2.5rem;
+    max-width: 600px;
+    width: 90%;
+    margin: 4rem auto;
+    text-align: center;
+    color: #fff;
+    backdrop-filter: blur(12px);
+    animation: fadeIn 0.5s ease;
+    background-blend-mode: overlay;
+  }
+  
+  /* Fade-in animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  
+  /* Headline */
+  .product-details h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 6px rgba(0, 0, 0, 0.7);
+  }
+  
+  /* Price & cost */
+  .product-details p {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin: 1rem 0;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+  }
+  
+  /* Quantity selector */
+  .product-quantity {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-h1, p {
+    margin: 2rem 0;
+  }
+  
+  /* Quantity input */
+  .counter-input {
+    margin: 0 20px;
+    width: 80px;
     text-align: center;
+    font-size: 1.2rem;
+    padding: 0.4rem;
+    border-radius: 10px;
+    border: none;
+    background: rgba(0, 0, 0, 0.25);
+    color: white;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Hide number spinners */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  /* Button styles */
+  .action-btn {
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+    margin: 0.4rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  
+  /* Edit Button: solid green, gradient on hover */
+  .edit-btn {
+    background: #4a974c !Important; 
+    color: white;
+  }
+  
+  .edit-btn:hover {
+    background: linear-gradient(to bottom, #6aab49, #517763) !Important;
+    transform: scale(1.05);
+  }
+  
+  /* Delete Button: solid red, gradient on hover */
+  .delete-btn {
+    background: #aa2927 !Important;
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background: linear-gradient(to bottom , #ba0000, #790000) !Important;
+    transform: scale(1.05);
+  }
+  
+  /* Button container */
+  .button-loc {
+    display: flex;
     justify-content: center;
-    align-items: center;
-}
-
-.counter-input {
-    margin: 20px;
-    width: 10%;
-    text-align: center;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+  
+  /* Responsive layout */
+  @media (max-width: 600px) {
+    .product-details {
+      padding: 1.5rem;
+    }
+  
+    .product-quantity {
+      flex-direction: column;
+    }
+  
+    .counter-input {
+      margin: 0.5rem 0;
+    }
+  
+    .button-loc {
+      flex-direction: column;
+    }
+  }
+  

@@ -98,7 +98,7 @@ const ProductDetailsPage = () => {
           </span>
           <p>Total Cost: ₱{cost}</p>
           <span className="button-loc">
-              <button type="submit" className="action-btn edit-btn" >Submit</button>
+              <button type="submit" className="action-btn edit-btn" >Add to Cart</button>
               <button className="action-btn delete-btn" onClick={() => navigate('/shop')}>Cancel</button>
           </span>
       </form>

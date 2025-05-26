@@ -160,7 +160,7 @@ const AdminDashboard = () => {
   const totalRevenue = orders
     .filter(order => order.orderStatus === 1)
     .reduce((sum, order) => sum + order.products.reduce((orderSum, item) => 
-      orderSum + (item.productId.productPrice * item.orderQuantity), 0), 0);
+      orderSum + (item.productId?.productPrice * item.orderQuantity), 0), 0);
 
   const pendingOrders = orders.filter(order => order.orderStatus === 0);
   const completedOrders = orders.filter(order => order.orderStatus === 1).length;
@@ -328,15 +328,14 @@ const AdminDashboard = () => {
                     <td>{order.email}</td>
                     <td>{order.time}</td>
                     <td>
-                      {order.products.map(item => (
-                        <div key={item._id}>
-                          {item.productId.productName} x {item.orderQuantity}
-                        </div>
-                      ))}
-                    </td>
+                    {order.products.map(item => (
+                      <div key={item._id}>
+                        {item.productId?.productName || 'Unknown Product'} x {item.orderQuantity}
+                      </div>
+                    ))}
+
                     <td>₱{order.products.reduce((sum, item) => 
-                      sum + (item.productId.productPrice * item.orderQuantity), 0).toFixed(2)}</td>
-                    <td>
+                      sum + ((item.productId?.productPrice || 0) * item.orderQuantity), 0).toFixed(2)}</td>
                       <span className={`status-badge ${
                         order.orderStatus === 0 ? 'pending' :
                         order.orderStatus === 1 ? 'completed' : 'cancelled'

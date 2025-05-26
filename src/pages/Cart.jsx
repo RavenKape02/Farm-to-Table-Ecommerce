@@ -4,7 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { FaTrashAlt, FaShoppingCart } from 'react-icons/fa';
 import './Cart.css';
-import backgroundImage from '../assets/rice_bg.JPEG';
+import backgroundImage from '../assets/edited_bg-3.png';
 
 const CartPage = () => {
   const { userInfo, setCartCount } = useContext(AuthContext);
