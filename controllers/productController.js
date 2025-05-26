@@ -72,37 +72,62 @@ const createProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     const {id} = req.params;
     console.log('Updating product with ID:', id);
+    console.log('Update data:', req.body);
 
     //check if req id is valid
     if (!mongoose.Types.ObjectId.isValid(id)){
         return res.status(404).json({ message: 'Product not found' });
     }
 
-    const updatedProduct = await Product.findOneAndUpdate({_id: id}, {
-        ...req.body
-    });
+    try {
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id,
+            { ...req.body },
+            { 
+                new: true, // This ensures we get the updated document back
+                runValidators: true // This ensures the update follows the schema
+            }
+        );
 
-    if (!updatedProduct) {
-        return res.status(404).json({ message: 'Product not found' });
+        if (!updatedProduct) {
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        
+        console.log('Product updated successfully:', updatedProduct);
+        // Send back the updated product directly
+        res.status(200).json({ updatedProduct });
+    } catch (error) {
+        console.error('Error updating product:', error);
+        res.status(500).json({ message: 'Error updating product', error: error.message });
     }
-    
-    res.status(200).json({ updatedProduct });
 }
 
 const deleteProduct = async (req, res) => {
-    const { productId } = req.params;
+    const { id } = req.params;
+    console.log('Delete request received for product ID:', id);
 
     //check if req id is valid
-    if (!mongoose.Types.ObjectId.isValid(productId)){
+    if (!mongoose.Types.ObjectId.isValid(id)){
+        console.log('Invalid ObjectId:', id);
         return res.status(404).json({ message: 'Product not found' });
     }
 
-    const deletedProduct = await Product.findOneAndDelete(productId);
-
-    if (!deletedProduct){
-        return res.status(404).json({ message: 'Product not found' });
+    try {
+        console.log('Attempting to find and delete product with ID:', id);
+        const deletedProduct = await Product.findByIdAndDelete(id);
+        console.log('Delete result:', deletedProduct);
+        
+        if (!deletedProduct){
+            console.log('No product found with ID:', id);
+            return res.status(404).json({ message: 'Product not found' });
+        }
+        
+        console.log('Product successfully deleted:', deletedProduct);
+        res.status(200).json({ message: 'Product deleted successfully', deletedProduct });
+    } catch (error) {
+        console.error('Error in deleteProduct:', error);
+        res.status(500).json({ message: 'Error deleting product', error: error.message });
     }
-    res.status(200).json(deletedProduct);
 }
 
 module.exports = { getAllProducts, getProductById, getProductByName, createProduct, updateProduct, deleteProduct }; 
