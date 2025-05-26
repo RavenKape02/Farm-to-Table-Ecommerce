@@ -35,7 +35,12 @@ const Header = () => {
 
         <nav className={`nav ${menuOpen ? 'open' : ''}`}>
           {location.pathname !== '/login' && location.pathname !== '/register' && !isAdmin && (
-            <Link to="/shop" className="nav-link" onClick={() => setMenuOpen(false)}>Shop</Link>
+            <>
+              <Link to="/shop" className="nav-link" onClick={() => setMenuOpen(false)}>Shop</Link>
+              {isAuthenticated && !isMerchant && (
+                <Link to="/orders" className="nav-link" onClick={() => setMenuOpen(false)}>Orders</Link>
+              )}
+            </>
           )}
 
           {isAuthenticated && !isAdmin && !isMerchant && (
@@ -51,9 +56,6 @@ const Header = () => {
                 {userInfo?.firstName || 'Account'}
               </button>
               <div className="dropdown-content">
-                {!isAdmin && !isMerchant && (
-                  <Link to="/orders" className="dropdown-link">Orders</Link>
-                )}
                 {isMerchant && (
                   <Link to="/merchant" className="dropdown-link">Merchant Dashboard</Link>
                 )}

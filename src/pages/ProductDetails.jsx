@@ -16,8 +16,7 @@ const ProductDetailsPage = () => {
     const fetchProduct = async () => {
       const { data } = await axios.get(`/api/products/${id}`);
       setProduct(data.product);
-      //set values for buying 1 item at start
-      setCost(data.product.productPrice * 1); // Default cost to price of one unit
+      setCost(data.product.productPrice * 1); 
       setQuantity(1); 
     };
     fetchProduct();
@@ -34,7 +33,6 @@ const ProductDetailsPage = () => {
             alert("Cannot exceed available stock");
         }
     } else if (e == '-') {
-        //dont buy negative stock or be a window shopper lol
         if (quantity > 1) {
             newQuantity = quantity - 1;
         } else {
@@ -71,10 +69,10 @@ const ProductDetailsPage = () => {
       const total = data.items.reduce((acc, item) => acc + item.quantity, 0);
       setCartCount(total);
 
-      //update products after buying 
-      await axios.patch(`/api/products/${product._id}`, {
-        productQuantity: product.productQuantity - quantity
-      });
+      // Remove the product quantity update since it will be handled during order creation
+      // await axios.patch(`/api/products/${product._id}`, {
+      //   productQuantity: product.productQuantity - quantity
+      // });
   
       navigate('/shop');
     } catch (error) {

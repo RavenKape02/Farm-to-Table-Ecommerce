@@ -39,18 +39,17 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed; /* This line ensures the image stays in place */
+  background-attachment: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   box-sizing: border-box;
-  position: fixed; /* Prevent scrolling */
+  position: fixed; 
   top: 0;
   left: 0;
 }
 
-/* Form container with translucent white bg for readability */
 .login-form-container {
   background-color: rgba(255, 255, 255, 0.85);
   padding: 40px;
@@ -118,7 +117,7 @@
 .login-button, .register-button {
   width: 100%;
   padding: 14px;
-  background-color: #4f9562; /* base color */
+  background-color: #4f9562; 
   color: white;
   border: none;
   border-radius: 8px;
@@ -128,7 +127,7 @@
   transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
-  background-image: linear-gradient(to right, #4f9562, #7cb88a); /* default gradient */
+  background-image: linear-gradient(to right, #4f9562, #7cb88a); 
   background-size: 200% auto;
   transition: background-position 0.4s ease, transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -147,10 +146,10 @@
 }
 
 .login-button:hover, .register-button:hover {
-  background-image: linear-gradient(to right, #1a3320, #4f9562); /* hover gradient */
+  background-image: linear-gradient(to right, #1a3320, #4f9562); 
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(74, 111, 220, 0.2);
-  background-position: right center; /* animate gradient */
+  background-position: right center; 
 }
 
 .login-button:active, .register-button:active {
@@ -167,7 +166,7 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
-  background-image: none; /* override gradient on disabled */
+  background-image: none; 
 }
 
 .register-link, .login-link {
@@ -200,7 +199,6 @@
   border-left: 4px solid #e53935;
 }
 
-/* Logo section */
 .auth-logo {
   text-align: center;
   margin-bottom: 30px;
@@ -235,17 +233,16 @@ body, .login-container, .login-form-container, input, button, label, h2, h3, p {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -1;  /* behind all content */
+  z-index: -1;
 }
 
 .register-container {
   position: relative;
   z-index: 0;
-  background: rgba(255, 255, 255, 0.85); /* translucent form background */
+  background: rgba(255, 255, 255, 0.85);
 }
 
 
-/* Responsive adjustments */
 @media (max-width: 576px) {
   .login-form-container, .register-form-container {
     padding: 30px 20px;

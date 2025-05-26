@@ -1,113 +1,137 @@
 import { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import axios from 'axios';
 import './OrderHistory.css';
-//import Transaction from '../../models/Transaction';
 import Trashcan from '../images/Trashcan.png';
 
 const OrderHistory = () => {
+    const { userInfo } = useContext(AuthContext);
+    const [orders, setOrders] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    //stuff i used to test
-    let temporders = [
-        {
-            transactionID: '0001',
-            productID: '1001',
-            orderQuantity: 5,
-            orderStatus: 0, // 0 = pending, 1 = completed, 2 = canceled
-            email: 'z@gmail.com',
-            dateOrdered: '2025-05-10',
-            time: null
-        },
-        {
-            transactionID: '0002',
-            productID: '1002',
-            orderQuantity: 3,
-            orderStatus: 1, // 0 = pending, 1 = completed, 2 = canceled
-            email: 'z@gmail.com',
-            dateOrdered: '2025-04-20',
-            time: null
-        },
-        {
-            transactionID: '0003',
-            productID: '1003',
-            orderQuantity: 1,
-            orderStatus: 2, // 0 = pending, 1 = completed, 2 = canceled
-            email: 'z@gmail.com',
-            dateOrdered: '2024-12-25',
-            time: null
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const { data } = await axios.get(`/api/orders/user/${userInfo.email}`);
+                setOrders(data.orders || []);
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                setError('Failed to load orders. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (userInfo) {
+            fetchOrders();
         }
-    ];
+    }, [userInfo]);
 
-    const[orders, setOrders] = useState(temporders);
+    const cancelOrder = async (orderId) => {
+        if (!window.confirm('Are you sure you want to cancel this order?')) {
+            return;
+        }
 
-    //fetch orders here
-    // useEffect(() => {
-    //     //make func to send get req for all transactions
-    //     const getOrders = async () => {
-    //         const { data } = await axios.get('/api/transactions');
-    //       
-    //         //if worked, set orders to post response
-    //         if (response.ok){
-    //             setOrders(data)
-    //         }
-    //     }
-    //     //run func
-    //     getOrders()
-    // }, [])
+        try {
+            await axios.patch(`/api/orders/${orderId}`, {
+                orderStatus: 2 // Canceled
+            });
+            
+            // Update local state
+            setOrders(orders.map(order => 
+                order._id === orderId 
+                    ? { ...order, orderStatus: 2 }
+                    : order
+            ));
+            alert('Order has been canceled successfully.');
+        } catch (error) {
+            console.error('Error canceling order:', error);
+            alert('Failed to cancel order. Please try again.');
+        }
+    };
 
-    //update transaction here
-    const cancelTransaction = (transaction) => {
-        //transaction.orderStatus = 2
-        console.log("set transaction status to 2 pls ty")
-    }
+    const calculateOrderTotal = (products) => {
+        return products.reduce((total, item) => {
+            return total + (item.productId.productPrice * item.orderQuantity);
+        }, 0);
+    };
 
     return (
-        <div>
-        <ol>
-        {orders.map((currentorders, index) => {
-            if (currentorders.orderStatus == 0){
-                return <div className='orderhistorypending' key={index} onClick={() => cancelTransaction(currentorders[index])}>
-                            <span className='historyinfo'>
-                                <h1>{currentorders.productID} x {currentorders.orderQuantity}</h1>
-                                <h3>bought at {currentorders.dateOrdered}</h3>
-                            </span>
-                            <span>
-                                <img src={Trashcan} alt="Cancel?" style={{display: "block", margin: "auto"}} width={90} height={90}/>
-                            </span>
-                            <span className='historystatus'>
-                                <h1>PENDING</h1>
-                                <p>This order is waiting to be verified</p>
-                            </span>
-                        </div>
-            } else if (currentorders.orderStatus == 1){
-                return <div className='orderhistory' key={index} style={{borderWidth: 0, backgroundColor:"#8aa7fe"}}>
-                            <span className='historyinfo'>
-                            <h1>{currentorders.productID} x {currentorders.orderQuantity}</h1>
-                            <h3>bought at {currentorders.dateOrdered}</h3>
-                            </span>
-                            <span className='historystatus'>
-                                <h1>CONFIRMED</h1>
-                                <p>A merchant has confirmed the transaction</p>
-                            </span>
-                        </div>
+        <div className="order-history-container">
+            <h2>Your Order History</h2>
+            
+            {loading ? (
+                <div className="loading-state">
+                    <p>Loading your orders...</p>
+                </div>
+            ) : error ? (
+                <div className="error-state">
+                    <p>{error}</p>
+                </div>
+            ) : orders.length === 0 ? (
+                <div className="empty-state">
+                    <p>You haven't placed any orders yet.</p>
+                    <a href="/shop" className="shop-link">Start Shopping</a>
+                </div>
+            ) : (
+                <div className="orders-list">
+                    {orders.map((order) => (
+                        <div 
+                            key={order._id} 
+                            className={`order-card ${order.orderStatus === 0 ? 'pending' : 
+                                order.orderStatus === 1 ? 'completed' : 'canceled'}`}
+                        >
+                            <div className="order-header">
+                                <h3>Order #{order.transactionId}</h3>
+                                <p>Date: {new Date(order.dateOrdered).toLocaleDateString()}</p>
+                                <p>Time: {order.time}</p>
+                                <p className="payment-method">Payment Method: Cash on Delivery</p>
+                            </div>
+                            
+                            <div className="order-items">
+                                {order.products.map((item, index) => (
+                                    <div key={index} className="order-item">
+                                        <p>{item.productId.productName} x {item.orderQuantity}</p>
+                                        <p>₱{item.productId.productPrice * item.orderQuantity}</p>
+                                    </div>
+                                ))}
+                                <div className="order-total">
+                                    <p>Total Amount:</p>
+                                    <p>₱{calculateOrderTotal(order.products)}</p>
+                                </div>
+                            </div>
 
-            } else if (currentorders.orderStatus == 2){
-                return <div className='orderhistory' key={index} style={{borderWidth: 0, backgroundColor: "#cecece"}}>
-                            <span className='historyinfo'>
-                            <h1>{currentorders.productID} x {currentorders.orderQuantity}</h1>
-                            <h3>bought at {currentorders.dateOrdered}</h3>
-                            </span>
-                            <span className='historystatus'>
-                                <h1>CANCELLED</h1>
-                                <p>You cancelled your order</p>
-                            </span>
+                            <div className="order-footer">
+                                <div className="order-status">
+                                    <h4>
+                                        {order.orderStatus === 0 ? 'PENDING' :
+                                         order.orderStatus === 1 ? 'COMPLETED' : 'CANCELED'}
+                                    </h4>
+                                    <p>
+                                        {order.orderStatus === 0 ? 'Waiting for merchant confirmation' :
+                                         order.orderStatus === 1 ? 'Order has been confirmed' : 'Order was canceled'}
+                                    </p>
+                                </div>
+                                
+                                {order.orderStatus === 0 && (
+                                    <button 
+                                        className="cancel-btn"
+                                        onClick={() => cancelOrder(order._id)}
+                                    >
+                                        <img src={Trashcan} alt="Cancel Order" />
+                                        Cancel Order
+                                    </button>
+                                )}
+                            </div>
                         </div>
-
-            }
-        })}
-        </ol>
+                    ))}
+                </div>
+            )}
         </div>
-
     );
-}
+};
 
 export default OrderHistory;

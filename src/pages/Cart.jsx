@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import './Cart.css';
 
 const CartPage = () => {
   const { userInfo, setCartCount } = useContext(AuthContext);
@@ -25,24 +26,23 @@ const CartPage = () => {
 
   const handleRemove = async (itemId) => {
     try {
-      //get item id to find how many to add back to inventory
       const refundedItems = await axios.get(`/api/cart/product/${itemId}`);
-      console.log('products id:', refundedItems);
+      console.log('Refunded items:', refundedItems.data);
 
-      //get product then add back refunded items
-      const item = await axios.get(`/api/products/${refundedItems.data.product}`);
-      await axios.patch(`/api/products/${refundedItems.data.product}`, {
-        productQuantity: item.data.product.productQuantity + refundedItems.data.quantity
+      const item = await axios.get(`/api/products/${refundedItems.data.item.product}`);
+      await axios.patch(`/api/products/${refundedItems.data.item.product}`, {
+        productQuantity: item.data.product.productQuantity + refundedItems.data.item.quantity
       });
 
-      //remove from cart
-      const { data } = await axios.delete(`/api/cart/remove/${itemId}`);
+      await axios.delete(`/api/cart/remove/${itemId}`);
+      
+      const { data } = await axios.get(`/api/cart/user/${userInfo._id}`);
       setCartItems(data.items);
 
       const total = data.items.reduce((acc, item) => acc + item.quantity, 0);
       setCartCount(total);
     } catch (error) {
-      console.error('Failed to remove item', error);
+      console.error('Failed to remove item:', error);
     }
   };
 
@@ -53,24 +53,34 @@ const CartPage = () => {
 
   const createOrder = async () => {
     try {
-      //make the order and add to db
-      await axios.post('/api/orders/', {
-        products: cartItems,
-        orderStatus: 0,
-         email: userInfo.email,
-        dateOrdered: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString(),
+      const response = await axios.post('/api/orders/', {
+        products: cartItems.map(item => ({
+          product: {
+            _id: item.product._id,
+            productName: item.product.productName,
+            productPrice: item.product.productPrice
+          },
+          quantity: item.quantity
+        })),
+        email: userInfo.email,
+        dateOrdered: new Date().toISOString().split('T')[0], 
+        time: new Date().toLocaleTimeString()
       });
 
-      // Clear cart after order creation
-      await axios.delete(`/api/cart/clear/${userInfo._id}`);
-      setCartItems([]);
-      setCartCount(0);
-      navigate('/orders'); 
+      if (response.data.order) {
+        await axios.delete(`/api/cart/clear/${userInfo._id}`);
+        setCartItems([]);
+        setCartCount(0);
+        
+        alert('Order created successfully!');
+        
+        navigate('/orders');
+      }
     } catch (error) {
-      console.error('Failed to create order', error);
+      console.error('Failed to create order:', error);
+      alert(error.response?.data?.message || 'Failed to create order. Please try again.');
     }
-  }
+  };
 
   if (!userInfo) {
     navigate('/login');
@@ -79,21 +89,39 @@ const CartPage = () => {
 
   return (
     <div className="cart-page">
-      <h2>Your Cart</h2>
+      <h2>Your Shopping Cart</h2>
       {cartItems.length === 0 ? (
-        <p>Your cart is empty.</p>
+        <div className="empty-cart">
+          <p>Your cart is empty.</p>
+          <button className="continue-shopping-btn" onClick={() => navigate('/shop')}>
+            Continue Shopping
+          </button>
+        </div>
       ) : (
         <>
-          <ul>
+          <div className="cart-items">
             {cartItems.map((item) => (
-              <li key={item._id}>
-                {item.product.productName} - ₱{item.product.productPrice} x {item.quantity}
-                <button onClick={() => handleRemove(item._id)}>Remove</button>
-              </li>
+              <div className="cart-item" key={item._id}>
+                <div className="item-details">
+                  <h3>{item.product.productName}</h3>
+                  <p className="item-price">₱{item.product.productPrice} x {item.quantity}</p>
+                  <p className="item-subtotal">Subtotal: ₱{item.product.productPrice * item.quantity}</p>
+                </div>
+                <button 
+                  className="remove-btn"
+                  onClick={() => handleRemove(item._id)}
+                >
+                  Remove
+                </button>
+              </div>
             ))}
-          </ul>
-          <h3>Total: ₱{totalPrice}</h3>
-          <button onClick={() => createOrder()}>Confirm order</button>
+          </div>
+          <div className="cart-summary">
+            <h3>Total: ₱{totalPrice}</h3>
+            <button className="checkout-btn" onClick={createOrder}>
+              Proceed to Checkout
+            </button>
+          </div>
         </>
       )}
     </div>

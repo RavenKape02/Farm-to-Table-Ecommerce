@@ -6,13 +6,19 @@ import './AdminDashboard.css';
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
-  const [transactions, setTransactions] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [sortField, setSortField] = useState('productName');
   const [sortOrder, setSortOrder] = useState('asc');
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [deletingProduct, setDeletingProduct] = useState(null);
+  const [showOrders, setShowOrders] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [ordersPerPage] = useState(10);
+  const [sortOrdersBy, setSortOrdersBy] = useState('dateOrdered');
+  const [sortOrdersDirection, setSortOrdersDirection] = useState('desc');
+  const [filterStatus, setFilterStatus] = useState('all');
   const [newProduct, setNewProduct] = useState({
     productName: '',
     productType: 1,
@@ -25,15 +31,15 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [usersResponse, productsResponse, transactionsResponse] = await Promise.all([
+        const [usersResponse, productsResponse, ordersResponse] = await Promise.all([
           axios.get('/api/users'),
           axios.get('/api/products'),
-          axios.get('/api/transactions')
+          axios.get('/api/orders')
         ]);
         console.log('Fetched users:', usersResponse.data);
         setUsers(usersResponse.data);
         setProducts(productsResponse.data.products || []);
-        setTransactions(transactionsResponse.data || []);
+        setOrders(ordersResponse.data.orders || []);
       } catch (error) {
         console.error('Error fetching data:', error.response ? error.response.data : error.message);
       }
@@ -151,13 +157,60 @@ const AdminDashboard = () => {
     }));
   };
 
-  const totalRevenue = transactions
-    .filter(t => t.orderStatus === 1) 
-    .reduce((sum, t) => sum + (t.orderQuantity * t.productPrice), 0);
+  const totalRevenue = orders
+    .filter(order => order.orderStatus === 1)
+    .reduce((sum, order) => sum + order.products.reduce((orderSum, item) => 
+      orderSum + (item.productId.productPrice * item.orderQuantity), 0), 0);
 
-  const pendingOrders = transactions.filter(t => t.orderStatus === 0).length;
-  const completedOrders = transactions.filter(t => t.orderStatus === 1).length;
+  const pendingOrders = orders.filter(order => order.orderStatus === 0);
+  const completedOrders = orders.filter(order => order.orderStatus === 1).length;
+  const cancelledOrders = orders.filter(order => order.orderStatus === 2).length;
   const lowStockProducts = products.filter(p => p.productQuantity < 10).length;
+
+  // Sort and filter orders
+  const sortedAndFilteredOrders = orders
+    .filter(order => {
+      if (filterStatus === 'all') return true;
+      return order.orderStatus === parseInt(filterStatus);
+    })
+    .sort((a, b) => {
+      let comparison = 0;
+      if (sortOrdersBy === 'dateOrdered') {
+        comparison = new Date(b.dateOrdered) - new Date(a.dateOrdered);
+      } else if (sortOrdersBy === 'status') {
+        comparison = a.orderStatus - b.orderStatus;
+      } else if (sortOrdersBy === 'total') {
+        const totalA = a.products.reduce((sum, item) => 
+          sum + (item.productId.productPrice * item.orderQuantity), 0);
+        const totalB = b.products.reduce((sum, item) => 
+          sum + (item.productId.productPrice * item.orderQuantity), 0);
+        comparison = totalA - totalB;
+      }
+      return sortOrdersDirection === 'asc' ? comparison : -comparison;
+    });
+
+  // Get current orders for pagination
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = sortedAndFilteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const totalPages = Math.ceil(sortedAndFilteredOrders.length / ordersPerPage);
+
+  // Change page
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  // Handle sort change
+  const handleSortChange = (field) => {
+    if (field === sortOrdersBy) {
+      setSortOrdersDirection(sortOrdersDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortOrdersBy(field);
+      setSortOrdersDirection('desc');
+    }
+  };
 
   return (
     <div className="admin-dashboard">
@@ -184,7 +237,7 @@ const AdminDashboard = () => {
         </div>
         <div className="stat-card">
           <h3>Pending Orders</h3>
-          <div className="stat-value">{pendingOrders}</div>
+          <div className="stat-value">{pendingOrders.length}</div>
           <div className="stat-label">Awaiting Processing</div>
         </div>
       </div>
@@ -201,15 +254,152 @@ const AdminDashboard = () => {
           <span className="icon">📦</span>
           {isEditMode ? 'View Products' : 'Manage Products'}
         </button>
-        <button className="quick-action-btn" onClick={() => window.location.href = '/admin/orders'}>
+        <button 
+          className="quick-action-btn" 
+          onClick={() => setShowOrders(true)}
+        >
           <span className="icon">📋</span>
           View Orders
+          {pendingOrders.length > 0 && (
+            <span className="notification-badge">{pendingOrders.length}</span>
+          )}
         </button>
         <button className="quick-action-btn" onClick={() => window.location.href = '/admin/users'}>
           <span className="icon">👥</span>
           Manage Users
         </button>
       </div>
+
+      {showOrders && (
+        <div className="dashboard-section">
+          <div className="section-header">
+            <h2>All Orders</h2>
+            <button 
+              className="close-btn"
+              onClick={() => setShowOrders(false)}
+            >
+              ✕
+            </button>
+          </div>
+          
+          <div className="orders-controls">
+            <div className="filter-controls">
+              <select 
+                value={filterStatus} 
+                onChange={(e) => {
+                  setFilterStatus(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="filter-select"
+              >
+                <option value="all">All Orders</option>
+                <option value="0">Pending</option>
+                <option value="1">Completed</option>
+                <option value="2">Cancelled</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="table-container">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th onClick={() => handleSortChange('dateOrdered')} className="sortable">
+                    Date {sortOrdersBy === 'dateOrdered' && (sortOrdersDirection === 'asc' ? '↑' : '↓')}
+                  </th>
+                  <th>Order ID</th>
+                  <th>Customer Email</th>
+                  <th>Time</th>
+                  <th>Items</th>
+                  <th onClick={() => handleSortChange('total')} className="sortable">
+                    Total {sortOrdersBy === 'total' && (sortOrdersDirection === 'asc' ? '↑' : '↓')}
+                  </th>
+                  <th onClick={() => handleSortChange('status')} className="sortable">
+                    Status {sortOrdersBy === 'status' && (sortOrdersDirection === 'asc' ? '↑' : '↓')}
+                  </th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentOrders.map(order => (
+                  <tr key={order._id}>
+                    <td>{new Date(order.dateOrdered).toLocaleDateString()}</td>
+                    <td>{order.transactionId}</td>
+                    <td>{order.email}</td>
+                    <td>{order.time}</td>
+                    <td>
+                      {order.products.map(item => (
+                        <div key={item._id}>
+                          {item.productId.productName} x {item.orderQuantity}
+                        </div>
+                      ))}
+                    </td>
+                    <td>₱{order.products.reduce((sum, item) => 
+                      sum + (item.productId.productPrice * item.orderQuantity), 0).toFixed(2)}</td>
+                    <td>
+                      <span className={`status-badge ${
+                        order.orderStatus === 0 ? 'pending' :
+                        order.orderStatus === 1 ? 'completed' : 'cancelled'
+                      }`}>
+                        {order.orderStatus === 0 ? 'Pending' :
+                         order.orderStatus === 1 ? 'Completed' : 'Cancelled'}
+                      </span>
+                    </td>
+                    <td>
+                      {order.orderStatus === 0 && (
+                        <button 
+                          className="action-btn confirm-btn"
+                          onClick={async () => {
+                            try {
+                              await axios.patch(`/api/orders/${order._id}`, {
+                                orderStatus: 1 // Completed
+                              });
+                              setOrders(orders.map(o => 
+                                o._id === order._id ? { ...o, orderStatus: 1 } : o
+                              ));
+                            } catch (error) {
+                              console.error('Error confirming order:', error);
+                              alert('Failed to confirm order. Please try again.');
+                            }
+                          }}
+                        >
+                          Confirm
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="pagination">
+            <button 
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="pagination-btn"
+            >
+              Previous
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
+              <button
+                key={number}
+                onClick={() => paginate(number)}
+                className={`pagination-btn ${currentPage === number ? 'active' : ''}`}
+              >
+                {number}
+              </button>
+            ))}
+            <button 
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="pagination-btn"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {showAddProduct && (
         <div className="dashboard-section">
@@ -282,21 +472,22 @@ const AdminDashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {transactions.slice(0, 5).map(transaction => (
-                <tr key={transaction._id}>
-                  <td>{transaction.productID}</td>
-                  <td>{transaction.orderQuantity}</td>
+              {orders.slice(0, 5).map(order => (
+                <tr key={order._id}>
+                  <td>{order.transactionId}</td>
+                  <td>{order.products.reduce((sum, item) => 
+                    sum + item.orderQuantity, 0)}</td>
                   <td>
                     <span className={`status-badge ${
-                      transaction.orderStatus === 0 ? 'pending' :
-                      transaction.orderStatus === 1 ? 'delivered' : 'processing'
+                      order.orderStatus === 0 ? 'pending' :
+                      order.orderStatus === 1 ? 'completed' : 'cancelled'
                     }`}>
-                      {transaction.orderStatus === 0 ? 'Pending' :
-                       transaction.orderStatus === 1 ? 'Completed' : 'Processing'}
+                      {order.orderStatus === 0 ? 'Pending' :
+                       order.orderStatus === 1 ? 'Completed' : 'Cancelled'}
                     </span>
                   </td>
-                  <td>{transaction.email}</td>
-                  <td>{new Date(transaction.dateOrdered).toLocaleDateString()}</td>
+                  <td>{order.email}</td>
+                  <td>{new Date(order.dateOrdered).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>

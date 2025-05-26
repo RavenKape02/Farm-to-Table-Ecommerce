@@ -15,7 +15,9 @@ export const AuthProvider = ({ children }) => {
         const parsedUserInfo = JSON.parse(savedUserInfo);
         setUserInfo(parsedUserInfo);
         axios.defaults.headers.common['Authorization'] = `Bearer ${parsedUserInfo.token}`;
-        fetchCartCount(parsedUserInfo._id);
+        if (parsedUserInfo._id) {
+          fetchCartCount(parsedUserInfo._id);
+        }
       } catch (error) {
         console.error('Error parsing saved user info:', error);
         localStorage.removeItem('userInfo');
@@ -26,7 +28,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchCartCount = async (userId) => {
     try {
-      const { data } = await axios.get(`/api/cart/${userId}`);
+      const { data } = await axios.get(`/api/cart/user/${userId}`);
       const count = data.items.reduce((acc, item) => acc + item.quantity, 0);
       setCartCount(count);
     } catch (err) {
@@ -39,7 +41,9 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('userInfo', JSON.stringify(userData));
     setUserInfo(userData);
     axios.defaults.headers.common['Authorization'] = `Bearer ${userData.token}`;
-    fetchCartCount(userData._id);
+    if (userData._id) {
+      fetchCartCount(userData._id);
+    }
   };
 
   const logout = () => {
