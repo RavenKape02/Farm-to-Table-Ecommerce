@@ -43,7 +43,7 @@ This full-stack e-commerce web application is the final project for CMSC 100. It
 **REQUIREMENTS**
 - Node.js and npm must be installed
 - MongoDB must be installed and running
-- `.env` file must be properly configured (you can refer to `.env.example`)
+- `.env` file must be properly configured
 
 **STEPS**
 1. Open a terminal and navigate to the project directory.
