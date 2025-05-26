@@ -10,6 +10,9 @@ const AdminDashboard = () => {
   const [sortField, setSortField] = useState('productName');
   const [sortOrder, setSortOrder] = useState('asc');
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [deletingProduct, setDeletingProduct] = useState(null);
   const [newProduct, setNewProduct] = useState({
     productName: '',
     productType: 1,
@@ -83,6 +86,71 @@ const AdminDashboard = () => {
     }));
   };
 
+  const handleEditProduct = async (e) => {
+    e.preventDefault();
+    try {
+      console.log('Updating product:', editingProduct);
+      const response = await axios.patch(`/api/products/${editingProduct._id}`, editingProduct);
+      console.log('Update response:', response.data);
+      
+      // Fetch fresh data after successful update
+      const productsResponse = await axios.get('/api/products');
+      setProducts(productsResponse.data.products);
+      
+      setEditingProduct(null);
+    } catch (error) {
+      console.error('Error updating product:', error);
+      alert('Failed to update product. Please try again.');
+    }
+  };
+
+  const handleDeleteProduct = async () => {
+    try {
+      const productId = deletingProduct._id;
+      console.log('Attempting to delete product with ID:', productId);
+      
+      // Log the full URL we're trying to hit
+      const deleteUrl = `/api/products/${productId}`;
+      console.log('Delete URL:', deleteUrl);
+      
+      const response = await axios({
+        method: 'delete',
+        url: deleteUrl,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('Delete response:', response);
+      
+      if (response.status === 200) {
+        setProducts(products.filter(p => p._id !== productId));
+        setDeletingProduct(null);
+      }
+    } catch (error) {
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        url: error.config?.url
+      });
+      
+      if (error.response?.status === 404) {
+        alert('Product not found. It may have been already deleted.');
+      } else {
+        alert('Failed to delete product. Please try again.');
+      }
+    }
+  };
+
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditingProduct(prev => ({
+      ...prev,
+      [name]: name === 'productType' ? parseInt(value) : value
+    }));
+  };
+
   const totalRevenue = transactions
     .filter(t => t.orderStatus === 1) 
     .reduce((sum, t) => sum + (t.orderQuantity * t.productPrice), 0);
@@ -126,9 +194,12 @@ const AdminDashboard = () => {
           <span className="icon">➕</span>
           Add New Product
         </button>
-        <button className="quick-action-btn" onClick={() => window.location.href = '/admin/products'}>
+        <button 
+          className={`quick-action-btn ${isEditMode ? 'active' : ''}`} 
+          onClick={() => setIsEditMode(!isEditMode)}
+        >
           <span className="icon">📦</span>
-          Manage Products
+          {isEditMode ? 'View Products' : 'Manage Products'}
         </button>
         <button className="quick-action-btn" onClick={() => window.location.href = '/admin/orders'}>
           <span className="icon">📋</span>
@@ -236,6 +307,7 @@ const AdminDashboard = () => {
                 <th>Price</th>
                 <th>Quantity</th>
                 <th>Description</th>
+                {isEditMode && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -258,12 +330,106 @@ const AdminDashboard = () => {
                     </span>
                   </td>
                   <td>{product.productDescription}</td>
+                  {isEditMode && (
+                    <td>
+                      <button 
+                        className="action-btn edit-btn"
+                        onClick={() => setEditingProduct({...product})}
+                      >
+                        ✏️
+                      </button>
+                      <button 
+                        className="action-btn delete-btn"
+                        onClick={() => setDeletingProduct(product)}
+                      >
+                        🗑️
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {editingProduct && (
+        <div className="modal">
+          <div className="modal-content">
+            <h2>Edit Product</h2>
+            <form onSubmit={handleEditProduct} className="edit-product-form">
+              <input
+                type="text"
+                name="productName"
+                placeholder="Product Name"
+                value={editingProduct.productName}
+                onChange={handleEditInputChange}
+                required
+              />
+              <select
+                name="productType"
+                value={editingProduct.productType}
+                onChange={handleEditInputChange}
+                required
+              >
+                <option value={1}>Crop</option>
+                <option value={2}>Poultry</option>
+              </select>
+              <input
+                type="number"
+                name="productPrice"
+                placeholder="Price"
+                value={editingProduct.productPrice}
+                onChange={handleEditInputChange}
+                required
+              />
+              <textarea
+                name="productDescription"
+                placeholder="Product Description"
+                value={editingProduct.productDescription}
+                onChange={handleEditInputChange}
+                required
+              />
+              <input
+                type="number"
+                name="productQuantity"
+                placeholder="Quantity"
+                value={editingProduct.productQuantity}
+                onChange={handleEditInputChange}
+                required
+              />
+              <div className="modal-buttons">
+                <button type="submit">Save Changes</button>
+                <button type="button" onClick={() => setEditingProduct(null)}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {deletingProduct && (
+        <div className="modal">
+          <div className="modal-content delete-confirmation">
+            <h2>Delete Product</h2>
+            <p>Are you sure you want to delete "{deletingProduct.productName}"?</p>
+            <p className="warning-text">This action cannot be undone.</p>
+            <div className="modal-buttons">
+              <button 
+                className="delete-confirm-btn"
+                onClick={handleDeleteProduct}
+              >
+                Delete Product
+              </button>
+              <button 
+                className="cancel-btn"
+                onClick={() => setDeletingProduct(null)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
