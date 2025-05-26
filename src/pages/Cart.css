@@ -5,13 +5,15 @@
 }
 
 .cart-page h2 {
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  color: white;
   text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
 }
 
 .empty-cart {
+  background-color: rgba(255, 255, 255, 0.85) !important;
   text-align: center;
   padding: 3rem;
   background: #f8f9fa;
@@ -47,6 +49,7 @@
 }
 
 .cart-item {
+  background-color: rgba(255, 255, 255, 0.85) !important;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -92,6 +95,7 @@
 }
 
 .cart-summary {
+  background-color: rgba(255, 255, 255, 0.85) !important;
   background: white;
   padding: 1.5rem;
   border-radius: 8px;

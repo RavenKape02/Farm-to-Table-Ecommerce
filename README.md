@@ -67,3 +67,10 @@ You can use the following pre-created accounts to access the app:
 
 > These accounts are pre-seeded for testing purposes.  
 > As a customer, you can also **sign up for a new account** if you prefer to use your own login.
+
+## REFERENCE 
+
+The following resources were consulted as part of the frontend design process, providing the overall aesthetic of the project’s user interface:
+
+- https://www.behance.net/search/images?similarStyleImagesId=1286930289
+- https://www.npmjs.com/package/react-icons

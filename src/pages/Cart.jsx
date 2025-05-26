@@ -2,7 +2,9 @@ import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { FaTrashAlt, FaShoppingCart } from 'react-icons/fa';
 import './Cart.css';
+import backgroundImage from '../assets/rice_bg.JPEG';
 
 const CartPage = () => {
   const { userInfo, setCartCount } = useContext(AuthContext);
@@ -14,9 +16,7 @@ const CartPage = () => {
       try {
         const { data } = await axios.get(`/api/cart/user/${userInfo._id}`);
         setCartItems(data.items);
-
-        const total = data.items.reduce((acc, item) => acc + item.quantity, 0);
-        setCartCount(total);
+        setCartCount(data.items.reduce((acc, item) => acc + item.quantity, 0));
       } catch (error) {
         console.error('Failed to load cart', error);
       }
@@ -26,30 +26,19 @@ const CartPage = () => {
 
   const handleRemove = async (itemId) => {
     try {
-      const refundedItems = await axios.get(`/api/cart/product/${itemId}`);
-      console.log('Refunded items:', refundedItems.data);
-
-      const item = await axios.get(`/api/products/${refundedItems.data.item.product}`);
-      await axios.patch(`/api/products/${refundedItems.data.item.product}`, {
-        productQuantity: item.data.product.productQuantity + refundedItems.data.item.quantity
+      const refunded = await axios.get(`/api/cart/product/${itemId}`);
+      const product = await axios.get(`/api/products/${refunded.data.item.product}`);
+      await axios.patch(`/api/products/${refunded.data.item.product}`, {
+        productQuantity: product.data.product.productQuantity + refunded.data.item.quantity,
       });
-
       await axios.delete(`/api/cart/remove/${itemId}`);
-      
       const { data } = await axios.get(`/api/cart/user/${userInfo._id}`);
       setCartItems(data.items);
-
-      const total = data.items.reduce((acc, item) => acc + item.quantity, 0);
-      setCartCount(total);
+      setCartCount(data.items.reduce((acc, item) => acc + item.quantity, 0));
     } catch (error) {
       console.error('Failed to remove item:', error);
     }
   };
-
-  const totalPrice = cartItems.reduce(
-    (acc, item) => acc + item.product.productPrice * item.quantity,
-    0
-  );
 
   const createOrder = async () => {
     try {
@@ -63,7 +52,7 @@ const CartPage = () => {
           quantity: item.quantity
         })),
         email: userInfo.email,
-        dateOrdered: new Date().toISOString().split('T')[0], 
+        dateOrdered: new Date().toISOString().split('T')[0],
         time: new Date().toLocaleTimeString()
       });
 
@@ -71,14 +60,12 @@ const CartPage = () => {
         await axios.delete(`/api/cart/clear/${userInfo._id}`);
         setCartItems([]);
         setCartCount(0);
-        
         alert('Order created successfully!');
-        
         navigate('/orders');
       }
     } catch (error) {
       console.error('Failed to create order:', error);
-      alert(error.response?.data?.message || 'Failed to create order. Please try again.');
+      alert(error.response?.data?.message || 'Failed to create order.');
     }
   };
 
@@ -88,8 +75,18 @@ const CartPage = () => {
   }
 
   return (
-    <div className="cart-page">
-      <h2>Your Shopping Cart</h2>
+    <div
+      className="cart-page"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundAttachment: 'fixed',
+        backgroundRepeat: 'no-repeat',
+        minHeight: '100vh',
+        padding: '2rem'
+      }}
+    >
+      <h2><FaShoppingCart /> Your Shopping Cart</h2>
       {cartItems.length === 0 ? (
         <div className="empty-cart">
           <p>Your cart is empty.</p>
@@ -105,19 +102,18 @@ const CartPage = () => {
                 <div className="item-details">
                   <h3>{item.product.productName}</h3>
                   <p className="item-price">₱{item.product.productPrice} x {item.quantity}</p>
-                  <p className="item-subtotal">Subtotal: ₱{item.product.productPrice * item.quantity}</p>
+                  <p className="item-subtotal">
+                    Subtotal: ₱{item.product.productPrice * item.quantity}
+                  </p>
                 </div>
-                <button 
-                  className="remove-btn"
-                  onClick={() => handleRemove(item._id)}
-                >
-                  Remove
+                <button className="remove-btn" onClick={() => handleRemove(item._id)}>
+                  <FaTrashAlt /> Remove
                 </button>
               </div>
             ))}
           </div>
           <div className="cart-summary">
-            <h3>Total: ₱{totalPrice}</h3>
+            <h3>Total: ₱{cartItems.reduce((acc, item) => acc + item.product.productPrice * item.quantity, 0)}</h3>
             <button className="checkout-btn" onClick={createOrder}>
               Proceed to Checkout
             </button>

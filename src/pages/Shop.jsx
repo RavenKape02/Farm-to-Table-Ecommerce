@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import {
+  FaSortAlphaDown,
+  FaSortAlphaUp,
+  FaDollarSign,
+  FaBoxes,
+  FaTag
+} from 'react-icons/fa';
+import backgroundImage from '../assets/sunrise_bg.jpg';
 import './Shop.css';
 
 const ShopPage = () => {
@@ -39,57 +47,85 @@ const ShopPage = () => {
     return sortOrder === 'asc' ? comparison : -comparison;
   });
 
-  return (
-    <div className="shop-page">
-      <div className="shop-header">
-        <h2>Our Products</h2>
-        <div className="sort-controls">
-          <button 
-            className={`sort-btn ${sortField === 'productName' ? 'active' : ''}`}
-            onClick={() => handleSort('productName')}
-          >
-            Name {sortField === 'productName' && (sortOrder === 'asc' ? '↑' : '↓')}
-          </button>
-          <button 
-            className={`sort-btn ${sortField === 'productType' ? 'active' : ''}`}
-            onClick={() => handleSort('productType')}
-          >
-            Type {sortField === 'productType' && (sortOrder === 'asc' ? '↑' : '↓')}
-          </button>
-          <button 
-            className={`sort-btn ${sortField === 'productPrice' ? 'active' : ''}`}
-            onClick={() => handleSort('productPrice')}
-          >
-            Price {sortField === 'productPrice' && (sortOrder === 'asc' ? '↑' : '↓')}
-          </button>
-          <button 
-            className={`sort-btn ${sortField === 'productQuantity' ? 'active' : ''}`}
-            onClick={() => handleSort('productQuantity')}
-          >
-            Stock {sortField === 'productQuantity' && (sortOrder === 'asc' ? '↑' : '↓')}
-          </button>
-        </div>
-      </div>
+  const renderSortIcon = (field) => {
+    if (field !== sortField) return null;
+    return sortOrder === 'asc' ? <FaSortAlphaDown /> : <FaSortAlphaUp />;
+  };
 
-      <div className="product-grid">
-        {sortedProducts.map((product) => (
-          <div className="product-card" key={product._id}>
-            <h3>{product.productName}</h3>
-            <div className="product-type">
-              {product.productType === 1 ? 'Crop' : 'Poultry'}
-            </div>
-            <div className="product-price">₱{product.productPrice}</div>
-            <div className="product-stock">
-              Stock: {product.productQuantity}
-            </div>
-            <p className="product-description">{product.productDescription}</p>
-            <Link to={`/product/${product._id}`} className="view-details-btn">
-              View Details
-            </Link>
-          </div>
-        ))}
+  return (
+    <div
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed',
+        minHeight: '100%',
+        width: '100%',
+        padding: '2rem 0'
+      }}
+    >
+        <header className="shop-header">
+          <h2>Products</h2>
+          <nav className="sort-controls">
+            <button
+              className={`sort-btn ${sortField === 'productName' ? 'active' : ''}`}
+              onClick={() => handleSort('productName')}
+              title="Sort by Name"
+            >
+              <FaTag /> Name {renderSortIcon('productName')}
+            </button>
+            <button
+              className={`sort-btn ${sortField === 'productType' ? 'active' : ''}`}
+              onClick={() => handleSort('productType')}
+              title="Sort by Type"
+            >
+              <FaBoxes /> Type {renderSortIcon('productType')}
+            </button>
+            <button
+              className={`sort-btn ${sortField === 'productPrice' ? 'active' : ''}`}
+              onClick={() => handleSort('productPrice')}
+              title="Sort by Price"
+            >
+              <FaDollarSign /> Price {renderSortIcon('productPrice')}
+            </button>
+            <button
+              className={`sort-btn ${sortField === 'productQuantity' ? 'active' : ''}`}
+              onClick={() => handleSort('productQuantity')}
+              title="Sort by Stock"
+            >
+              <FaBoxes /> Stock {renderSortIcon('productQuantity')}
+            </button>
+          </nav>
+        </header>
+
+        <section className="product-grid">
+          {sortedProducts.map((product) => (
+            <article className="product-card" key={product._id}>
+              <div className="product-header">
+                <h3>{product.productName}</h3>
+                <div
+                  className={`product-type ${
+                    product.productType === 1 ? 'crop' : 'poultry'
+                  }`}
+                >
+                  {product.productType === 1 ? 'Crop' : 'Poultry'}
+                </div>
+              </div>
+              <p className="product-description">{product.productDescription}</p>
+              <p className="product-price">
+                ₱{Number(product.productPrice).toLocaleString('en-PH', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
+              </p>
+              <Link to={`/product/${product._id}`} className="view-details-btn">
+                View Details
+              </Link>
+              <p className="product-stock">Stock: {product.productQuantity}</p>
+            </article>
+          ))}
+        </section>
       </div>
-    </div>
   );
 };
 
