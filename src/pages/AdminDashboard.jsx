@@ -443,7 +443,6 @@ const AdminDashboard = () => {
               placeholder="Product Description"
               value={newProduct.productDescription}
               onChange={handleInputChange}
-              required
             />
             <input
               type="number"
@@ -587,7 +586,6 @@ const AdminDashboard = () => {
                 placeholder="Product Description"
                 value={editingProduct.productDescription}
                 onChange={handleEditInputChange}
-                required
               />
               <input
                 type="number"
