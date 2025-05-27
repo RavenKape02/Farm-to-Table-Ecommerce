@@ -1,23 +1,83 @@
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+/* Glassmorphic effect base class */
+.glass-bg {
+  background: rgba(0, 128, 0, 0.2); /* soft green tint */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
 .cart-page {
+  position: relative;
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  overflow: hidden; /* keep bg image clipped */
+  z-index: 0; /* base layer */
+}
+
+.background-container {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('../assets/edited_bg-3.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1; /* behind content */
+  transform-origin: center center;
+  animation: bgZoomOut 2s ease-out forwards;
+  transform: scale(1.2); /* start zoomed in */
+}
+
+@keyframes bgZoomOut {
+  from {
+    transform: scale(1.2);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 .cart-page h2 {
   font-size: 2.5rem;
-  color: white;
+  color: rgb(0, 79, 18);
   text-align: center;
   margin-bottom: 2rem;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+}
+
+/* Style enhancements for specific sections */
+.cart-item,
+.cart-summary,
+.empty-cart {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 20px rgba(0, 128, 0, 0.15);
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cart-item:hover,
+.cart-summary:hover {
+  transform: scale(1.02);
+  box-shadow: 0 10px 30px rgba(0, 128, 0, 0.25);
 }
 
 .empty-cart {
-  background-color: rgba(255, 255, 255, 0.85) !important;
   text-align: center;
   padding: 3rem;
-  background: #f8f9fa;
-  border-radius: 8px;
 }
 
 .empty-cart p {
@@ -41,26 +101,26 @@
   background-color: #3b58b8;
 }
 
+/* Cart items grid with equal square boxes */
 .cart-items {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
 }
 
 .cart-item {
-  background-color: rgba(255, 255, 255, 0.85) !important;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  animation: fadeIn 0.6s ease-in;
   padding: 1.5rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 1 / 1; /* Makes each cart item square */
 }
 
 .item-details {
-  flex: 1;
+  flex-grow: 1;
 }
 
 .item-details h3 {
@@ -76,30 +136,27 @@
 
 .item-subtotal {
   font-weight: 500;
-  color: #4a6fdc;
+  color: #266400;
 }
 
 .remove-btn {
-  background-color: #ff6b6b;
-  color: white;
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background-color 0.3s ease;
+  background-color: #ff6b6b !important;
+  color: white !important;
+  border: none !important;
+  padding: 0.6rem 1.2rem !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  font-size: 0.9rem !important;
+  transition: background-color 0.3s ease !important;
+  align-self: flex-start; /* keep remove button at top left */
 }
 
 .remove-btn:hover {
-  background-color: #e05a5a;
+  background-color: #b30000 !important;
 }
 
 .cart-summary {
-  background-color: rgba(255, 255, 255, 0.85) !important;
-  background: white;
   padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: right;
 }
 
@@ -110,16 +167,17 @@
 }
 
 .checkout-btn {
-  background-color: #2ecc71;
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 4px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  background: rgba(46, 204, 113, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4) !important;
+  color: white !important;
+  padding: 1rem 2rem !important;
+  border-radius: 4px !important;
+  font-size: 1.1rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease !important;
 }
 
 .checkout-btn:hover {
-  background-color: #27ae60;
-} 
+  background: rgba(39, 174, 96, 0.9) !important;
+}

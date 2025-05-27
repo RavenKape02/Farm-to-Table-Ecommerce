@@ -76,7 +76,7 @@ const CartPage = () => {
 
   return (
     <div
-      className="cart-page"
+      className="cart-page glass-bg fade-in"
       style={{
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
@@ -86,7 +86,8 @@ const CartPage = () => {
         padding: '2rem'
       }}
     >
-      <h2><FaShoppingCart /> Your Shopping Cart</h2>
+    <div className="background-container" />
+      <h2><FaShoppingCart />Shopping Cart</h2>
       {cartItems.length === 0 ? (
         <div className="empty-cart">
           <p>Your cart is empty.</p>
