@@ -160,7 +160,7 @@ const AdminDashboard = () => {
   const totalRevenue = orders
     .filter(order => order.orderStatus === 1)
     .reduce((sum, order) => sum + order.products.reduce((orderSum, item) => 
-      orderSum + (item.productId?.productPrice * item.orderQuantity), 0), 0);
+      orderSum + ((item.productId?.productPrice || 0) * item.orderQuantity), 0), 0);
 
   const pendingOrders = orders.filter(order => order.orderStatus === 0);
   const completedOrders = orders.filter(order => order.orderStatus === 1).length;
