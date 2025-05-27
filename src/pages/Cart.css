@@ -36,7 +36,7 @@
   background-repeat: no-repeat;
   z-index: -1; /* behind content */
   transform-origin: center center;
-  animation: bgZoomOut 2s ease-out forwards;
+  animation: bgZoomOut 0.8s ease-out forwards;
   transform: scale(1.2); /* start zoomed in */
 }
 

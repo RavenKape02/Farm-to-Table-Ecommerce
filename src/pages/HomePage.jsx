@@ -1,11 +1,14 @@
 import { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
+import { FiShoppingCart, FiClock, FiCheckCircle } from 'react-icons/fi';
 import './HomePage.css';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
   const { userInfo } = useContext(AuthContext);
   const [pendingOrders, setPendingOrders] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPendingOrders = async () => {
@@ -25,10 +28,14 @@ const HomePage = () => {
 
   return (
     <div className="home-container">
-      <div className="hero-section">
+      <div className="hero-section glassmorphic">
         <h1>Welcome to Farm2Table</h1>
         {userInfo && <p>Hello, {userInfo.firstName}!</p>}
         <p>Your one-stop shop for fresh agricultural products</p>
+        <button className="gradient-btn" onClick={() => navigate('/shop')}>
+          <FiShoppingCart size={20} style={{ marginRight: '8px' }} />
+          Shop Now
+        </button>
       </div>
 
       {userInfo && !userInfo.isAdmin && !userInfo.isMerchant && pendingOrders.length > 0 && (
@@ -36,11 +43,23 @@ const HomePage = () => {
           <h2>Your Pending Orders</h2>
           <div className="orders-grid">
             {pendingOrders.map((order) => (
-              <div key={order._id} className="order-card">
-                <h3>Order #{order._id.slice(-6)}</h3>
-                <p>Date: {order.dateOrdered}</p>
-                <p>Time: {order.time}</p>
-                <p>Status: Pending</p>
+              <div key={order._id} className="order-card glassmorphic fade-in">
+                <h3>
+                  <FiShoppingCart style={{ marginRight: '6px' }} />
+                  Order #{order._id.slice(-6)}
+                </h3>
+                <p>
+                  <FiClock style={{ marginRight: '6px' }} />
+                  Date: {order.dateOrdered}
+                </p>
+                <p>
+                  <FiClock style={{ marginRight: '6px' }} />
+                  Time: {order.time}
+                </p>
+                <p>
+                  <FiCheckCircle style={{ marginRight: '6px', color: '#FFA500' }} />
+                  Status: Pending
+                </p>
                 <div className="order-items">
                   {order.products.map((item, index) => (
                     <div key={index} className="order-item">
@@ -49,8 +68,10 @@ const HomePage = () => {
                     </div>
                   ))}
                 </div>
-                <p className="order-total">Total: ₱{order.products.reduce((sum, item) => 
-                  sum + (item.product.productPrice * item.quantity), 0)}</p>
+                <p className="order-total">
+                  Total: ₱{order.products.reduce((sum, item) =>
+                    sum + (item.product.productPrice * item.quantity), 0)}
+                </p>
               </div>
             ))}
           </div>
@@ -58,15 +79,15 @@ const HomePage = () => {
       )}
 
       <div className="features-section">
-        <div className="feature">
+        <div className="feature glassmorphic fade-in">
           <h3>Fresh Products</h3>
           <p>Direct from farms to your table</p>
         </div>
-        <div className="feature">
+        <div className="feature glassmorphic fade-in">
           <h3>Fast Delivery</h3>
           <p>Get your orders quickly</p>
         </div>
-        <div className="feature">
+        <div className="feature glassmorphic fade-in">
           <h3>Quality Guaranteed</h3>
           <p>Only the best products for you</p>
         </div>
@@ -75,4 +96,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage; 
+export default HomePage;
