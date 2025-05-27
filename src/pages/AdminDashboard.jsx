@@ -321,7 +321,8 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentOrders.map(order => (
+                {currentOrders.map(order => 
+                (
                   <tr key={order._id}>
                     <td>{new Date(order.dateOrdered).toLocaleDateString()}</td>
                     <td>{order.transactionId}</td>
@@ -486,8 +487,25 @@ const AdminDashboard = () => {
               {orders.slice(0, 5).map(order => (
                 <tr key={order._id}>
                   <td>{order.transactionId}</td>
-                  <td>{order.products.reduce((sum, item) => 
-                    sum + item.orderQuantity, 0)}</td>
+                  <td>
+                    ₱{order.products.reduce((sum, item, index) => {
+                      const price = Number(item.productId?.productPrice);
+                      const qty = Number(item.orderQuantity);
+                      
+                      if (isNaN(price) || isNaN(qty)) {
+                        console.warn(`Invalid data at index ${index}:`, {
+                          productPrice: item.productId?.productPrice,
+                          orderQuantity: item.orderQuantity,
+                          priceParsed: price,
+                          qtyParsed: qty,
+                          item,
+                        });
+                      }
+
+                      return sum + (price * qty);
+                    }, 0).toFixed(2)}
+                  </td>
+
                   <td>
                     <span className={`status-badge ${
                       order.orderStatus === 0 ? 'pending' :

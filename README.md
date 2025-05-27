@@ -1,5 +1,7 @@
 # CMSC 100 Final Project
 
+![Login](src/assets/login_preview.png)
+
 **AUTHORS**
 - Tipan, Jiro Kristofer
 - Clemente, Carl Timothy
@@ -51,7 +53,7 @@ This full-stack e-commerce web application is the final project for CMSC 100. It
 3. In one terminal, start the server and connect to MongoDB by running: `npm run server`. 
 4. In a **separate** terminal, start the client by running: `npm run dev`. Then, click on the local host shown in the terminal. (eg. http://localhost:5173/)
 5. The API and client should now be running. Make sure MongoDB is active before running the server.
-6. **Alternative option:** Instead of running the backend and frontend in two separate terminals, you can run both simultaneously using: `npm run dev:both`.
+6. **Alternative option:** Instead of running the backend and frontend in two separate terminals, you can run both simultaneously using: `npm run dev:both`. But first, install concurrently with `npm install concurrently --save-dev`.
 
 ## SAMPLE CREDENTIALS
 
