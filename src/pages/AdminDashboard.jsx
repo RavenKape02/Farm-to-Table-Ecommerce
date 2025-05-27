@@ -27,6 +27,10 @@ const AdminDashboard = () => {
     productQuantity: ''
   });
   const { userInfo } = useContext(AuthContext);
+  const [showSalesReport, setShowSalesReport] = useState(false);
+  const [salesPeriod, setSalesPeriod] = useState('monthly'); // 'weekly', 'monthly', 'annual'
+  const [salesData, setSalesData] = useState([]);
+  const [totalSales, setTotalSales] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -212,6 +216,77 @@ const AdminDashboard = () => {
     }
   };
 
+  const calculateSalesData = (period) => {
+    try {
+      const now = new Date();
+      let filteredOrders = orders.filter(order => order.orderStatus === 1);
+
+      // Filter orders based on selected period
+      switch (period) {
+        case 'weekly':
+          const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          filteredOrders = filteredOrders.filter(order => new Date(order.dateOrdered) >= weekAgo);
+          break;
+        case 'monthly':
+          const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+          filteredOrders = filteredOrders.filter(order => new Date(order.dateOrdered) >= monthAgo);
+          break;
+        case 'annual':
+          const yearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+          filteredOrders = filteredOrders.filter(order => new Date(order.dateOrdered) >= yearAgo);
+          break;
+      }
+
+      // Calculate sales per product
+      const productSales = {};
+      filteredOrders.forEach(order => {
+        if (!order.products || !Array.isArray(order.products)) return;
+        
+        order.products.forEach(item => {
+          if (!item || !item.productId) return;
+          
+          const productId = item.productId._id || 'unknown';
+          const productName = item.productId.productName || 'Unknown Product';
+          const quantity = item.orderQuantity || 0;
+          const price = item.productId.productPrice || 0;
+          const total = quantity * price;
+
+          if (!productSales[productId]) {
+            productSales[productId] = {
+              name: productName,
+              quantity: 0,
+              revenue: 0
+            };
+          }
+          productSales[productId].quantity += quantity;
+          productSales[productId].revenue += total;
+        });
+      });
+
+      // Convert to array and sort by revenue
+      const salesArray = Object.entries(productSales).map(([id, data]) => ({
+        id,
+        ...data
+      })).sort((a, b) => b.revenue - a.revenue);
+
+      // Calculate total sales
+      const total = salesArray.reduce((sum, item) => sum + item.revenue, 0);
+
+      setSalesData(salesArray);
+      setTotalSales(total);
+    } catch (error) {
+      console.error('Error calculating sales data:', error);
+      setSalesData([]);
+      setTotalSales(0);
+    }
+  };
+
+  useEffect(() => {
+    if (showSalesReport) {
+      calculateSalesData(salesPeriod);
+    }
+  }, [showSalesReport, salesPeriod, orders]);
+
   return (
     <div className="admin-dashboard">
       <div className="dashboard-header">
@@ -230,7 +305,7 @@ const AdminDashboard = () => {
           <div className="stat-value">{products.length}</div>
           <div className="stat-label">Active Products</div>
         </div>
-        <div className="stat-card">
+        <div className="stat-card clickable" onClick={() => setShowSalesReport(true)}>
           <h3>Total Revenue</h3>
           <div className="stat-value">₱{totalRevenue.toFixed(2)}</div>
           <div className="stat-label">From Completed Orders</div>
@@ -635,6 +710,65 @@ const AdminDashboard = () => {
               >
                 Cancel
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSalesReport && (
+        <div className="modal">
+          <div className="modal-content sales-report">
+            <div className="section-header">
+              <h2>Sales Report</h2>
+              <button 
+                className="close-btn"
+                onClick={() => setShowSalesReport(false)}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="sales-controls">
+              <select 
+                value={salesPeriod} 
+                onChange={(e) => setSalesPeriod(e.target.value)}
+                className="period-select"
+              >
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="annual">Annual</option>
+              </select>
+            </div>
+
+            <div className="sales-summary">
+              <h3>Total Sales: ₱{totalSales.toFixed(2)}</h3>
+            </div>
+
+            <div className="table-container">
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Units Sold</th>
+                    <th>Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {salesData.length > 0 ? (
+                    salesData.map(item => (
+                      <tr key={item.id}>
+                        <td>{item.name}</td>
+                        <td>{item.quantity}</td>
+                        <td>₱{item.revenue.toFixed(2)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="3" style={{ textAlign: 'center' }}>No sales data available for this period</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
