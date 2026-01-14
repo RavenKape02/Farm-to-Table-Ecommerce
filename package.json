@@ -4,12 +4,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node init && vite",
+    "build": "node init && vite build",
     "preview": "vite preview",
     "server": "node server.js",
     "client": "vite",
-    "dev:both": "concurrently \"npm run server\" \"npm run client\"",
+    "dev:both": "node init && concurrently \"npm run server\" \"npm run client\"",
     "seed": "node seeder.js",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext js,jsx --fix"
